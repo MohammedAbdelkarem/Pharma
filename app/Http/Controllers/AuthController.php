@@ -43,7 +43,7 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
-        $request->validate([
+        $request->validate([ // validation
             'mobile' => ['required' , 'exists:users,mobile'],
             'password' => ['required']
         ]);
