@@ -56,7 +56,7 @@ class AuthController extends Controller
         $token = $user_data->createToken('api')->plainTextToken;
 
         $data = [];
-        $data['data'] = $user_data;
+        $data['data'] = $user_data;;
         $data['token'] = $token;
         return $this->SendResponse($data , 201 , 'logged in successfully');
 
