@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
+use App\Mail\SendMail;
 use App\Http\Controllers\DB;
+use App\Models\UserResetPassword;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -16,6 +19,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'username' => ['required' , 'unique:users,username'],
+            'email' => ['required' , 'unique:users,email' , 'email'],
             'mobile' => ['required' , 'unique:users,mobile' , 'min:10' , 'max:10'],
             'password' => ['required' , 'min:8'],
             'confirm_password' => ['required' , 'same:password'],
@@ -67,4 +71,10 @@ class AuthController extends Controller
         $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
         return $this->SendResponse(null , 201 , 'logged out successfully');
     }
+    // public function send()
+    // {
+    //     $email = "alaa.2019.188@gmail.com";
+    //     Mail::to($email)->send(new SendMail());
+    //     return "email has been sent";
+    // }
 }
