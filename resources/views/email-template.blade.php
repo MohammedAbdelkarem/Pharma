@@ -2,5 +2,6 @@
     <p>app support team</p>
     <p>
         verification message and the code
+        {{ $inputs }}
     </p>
 </div>

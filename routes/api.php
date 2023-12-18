@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ResetUserController;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,3 +28,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('logout' , [AuthController::class , 'logout']);
 });
 Route::post('mail' , [AuthController::class , 'send']);
+Route::controller(ResetUserController::class) -> group(function(){
+    Route::post('forget' , 'forgotPassword');
+    Route::post('check' , 'checkCode');
+    Route::post('reset' , 'resetPassword');
+});

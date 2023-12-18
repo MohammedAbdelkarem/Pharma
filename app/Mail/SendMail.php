@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -12,17 +13,27 @@ use Illuminate\Queue\SerializesModels;
 class SendMail extends Mailable
 {
     use Queueable, SerializesModels;
-
+    protected $code;
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($code)
     {
-        //
+        $this->code = $code;
     }
+
+    /**
+   * Build the message.
+   *
+   * @return $this
+   */
     public function build()
     {
-        return $this->from("HealSupportTeam@gmail.com")->view('email-template');
+        return $this->from("HealSupportTeam@gmail.com")
+        ->view('email-template')
+        ->with([
+            'inputs' => $this->code,
+          ]);;
     }
 
     /**
@@ -50,7 +61,7 @@ class SendMail extends Mailable
      *
      * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
-    public function attachments(): array
+    public function attachments():array
     {
         return [];
     }

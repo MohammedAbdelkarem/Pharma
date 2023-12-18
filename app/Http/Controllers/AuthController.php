@@ -56,7 +56,7 @@ class AuthController extends Controller
             return $this->SendError(401 , 'check your password');
         }
 
-        $user_data = User::query()->where('mobile' , '=' , $request['mobile'])->first();
+        $user_data = User::query()->where('mobile' , '+=' , $request['mobile'])->first();
         $token = $user_data->createToken('api')->plainTextToken;
 
         $data = [];
