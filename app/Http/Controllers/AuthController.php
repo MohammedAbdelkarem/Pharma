@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Owner;
 use App\Mail\SendMail;
 use App\Http\Controllers\DB;
-use App\Models\UserResetPassword;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Http\Request;
+use App\Models\UserResetPassword;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Auth\Notifications\ResetPassword;
 
 class AuthController extends Controller
 {
@@ -56,7 +57,7 @@ class AuthController extends Controller
             return $this->SendError(401 , 'check your password');
         }
 
-        $user_data = User::query()->where('mobile' , '+=' , $request['mobile'])->first();
+        $user_data = User::query()->where('mobile' , '=' , $request['mobile'])->first();
         $token = $user_data->createToken('api')->plainTextToken;
 
         $data = [];
@@ -71,10 +72,28 @@ class AuthController extends Controller
         $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
         return $this->SendResponse(null , 201 , 'logged out successfully');
     }
-    // public function send()
-    // {
-    //     $email = "alaa.2019.188@gmail.com";
-    //     Mail::to($email)->send(new SendMail());
-    //     return "email has been sent";
-    // }
+    public function ownerRegister(Request $request)
+    {
+        $data=$request->validate([
+            'email' => ['required' , 'email']
+        ]);
+        $data['code'] = mt_rand(100000 , 999999);
+        Owner::query()->create($data); 
+
+        Mail::to($request['email'])->send(new SendMail($data['code'])); 
+
+        return $this->SendResponse(null , 201 , 'code has been sent successfully');
+    }
+    public function ownerCode(Request $request)
+    {
+        $request->validate([
+            'code' => ['required' , 'exists:owners,code']
+         ],
+         [
+            'code.exist' => 'the code is incorrect'
+         ]
+        );
+        return $this->SendResponse(null , 201 , 'correct code');
+    }
+    //not usre about it:resend function
 }

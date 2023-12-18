@@ -33,3 +33,5 @@ Route::controller(ResetUserController::class) -> group(function(){
     Route::post('check' , 'checkCode');
     Route::post('reset' , 'resetPassword');
 });
+Route::post('owneremail' , [AuthController::class , 'ownerRegister']);
+Route::post('ownercode' , [AuthController::class , 'ownerCode']);

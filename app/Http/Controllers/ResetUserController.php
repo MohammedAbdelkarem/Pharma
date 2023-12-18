@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ResetPasswordResource;
 use App\Mail\SendMail;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Mail;
 class ResetUserController extends Controller
 {
     use ResponseTrait;
-    public $email = null; 
     
     public function forgotPassword(Request $request) // recieve the email
     {
@@ -24,8 +24,6 @@ class ResetUserController extends Controller
     );
 
         UserResetPassword::query()->where('email' , $request['email'])->delete(); //delete the previous emails and codes from the user-reset_passwords table if it's exist
-
-        $this->email = $request['email'];
 
         $data['code'] = mt_rand(100000 , 999999); // generate the code 
 
@@ -56,16 +54,16 @@ class ResetUserController extends Controller
     public function resetPassword(Request $request) 
     {
         $data = $request->validate([
+            'email' => ['required'],
             'password' => ['required' , 'min:8'],
             'confirm_password' => ['required' , 'same:password'],
         ]);
-        $data['email']=$this->email;
-        $user = User::query()->where('email' , $this->email)->update([
-            'password' => ($data['password']) //updating the password
-        ]); //get the old data of the user form users table
-        // $user
-
-        return $this->SendResponse($data , 201 , 'password has been reset successfully');
-
+        // $email =UserResetPassword::query()->latest()->first('email');
+        // $data['email'] = $d-
+        $user = User::query()->where('email' , $request['email'])->update([
+            'password' => bcrypt($request['password'])
+        ]);
+        $u = User::query()->where('email' , $request['email'])->first();
+        return $this->SendResponse($u, 201 , 'password has been reset successfully');
     }
 }
