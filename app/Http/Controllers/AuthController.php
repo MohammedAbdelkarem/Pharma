@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Owner;
 use App\Mail\SendMail;
+use App\Mail\RegisterMail;
 use App\Http\Controllers\DB;
 use Illuminate\Http\Request;
 use App\Models\UserResetPassword;
@@ -80,7 +81,7 @@ class AuthController extends Controller
         $data['code'] = mt_rand(100000 , 999999);
         Owner::query()->create($data); 
 
-        Mail::to($request['email'])->send(new SendMail($data['code'])); 
+        Mail::to($request['email'])->send(new RegisterMail($data['code'])); 
 
         return $this->SendResponse(null , 201 , 'code has been sent successfully');
     }

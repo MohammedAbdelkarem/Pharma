@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\ResetUserController;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Http\Request;
@@ -35,3 +36,8 @@ Route::controller(ResetUserController::class) -> group(function(){
 });
 Route::post('owneremail' , [AuthController::class , 'ownerRegister']);
 Route::post('ownercode' , [AuthController::class , 'ownerCode']);
+Route::controller(MedicineController::class) -> group(function(){
+    Route::post('insert' , 'store');
+    Route::get('show' , 'show');
+    
+});
