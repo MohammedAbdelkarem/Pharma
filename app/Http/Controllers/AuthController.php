@@ -25,6 +25,7 @@ class AuthController extends Controller
             'mobile' => ['required' , 'unique:users,mobile' , 'min:10' , 'max:10'],
             'password' => ['required' , 'min:8'],
             'confirm_password' => ['required' , 'same:password'],
+            'role' => ['required'],
         ],
         [
             'username.required' => 'this field is required',

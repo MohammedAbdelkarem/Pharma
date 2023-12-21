@@ -19,9 +19,10 @@ return new class extends Migration
             $table->string('manufacture_company');
             $table->integer('available_quantity');
             $table->date('Ed');
-            $table->string('price');
+            $table->bigInteger('price');
             $table->string('photo');
             $table->foreignId('category_id')->constrained('categories')->CascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->CascadeOnDelete();
             $table->timestamps();
         });
     }

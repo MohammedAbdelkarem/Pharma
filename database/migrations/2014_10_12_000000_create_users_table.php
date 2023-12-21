@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('mobile')->unique();
             $table->string('password');
             $table->string('code')->nullable();
+            $table->string('role');
             $table->rememberToken();
             $table->timestamps();
         });
