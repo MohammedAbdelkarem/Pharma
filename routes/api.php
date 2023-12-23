@@ -22,24 +22,27 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('register' , [AuthController::class , 'register']);
-Route::post('login' , [AuthController::class , 'login']);
-
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('logout' , [AuthController::class , 'logout']);
     Route::post('update' , [MedicineController::class , 'updateOneProduct']);
     Route::post('insert' , [MedicineController::class , 'store']);
 });
-Route::post('mail' , [AuthController::class , 'send']);
+
+Route::controller(AuthController::class) -> group(function(){
+    Route::post('register' ,'register');
+    Route::post('login' , 'login');
+    Route::post('owneremail' , 'ownerRegister');
+    Route::post('ownercode' , 'ownerCode');
+    Route::post('mail' , 'send');
+});
+
 Route::controller(ResetUserController::class) -> group(function(){
     Route::post('forget' , 'forgotPassword');
     Route::post('check' , 'checkCode');
     Route::post('reset' , 'resetPassword');
 });
-Route::post('owneremail' , [AuthController::class , 'ownerRegister']);
-Route::post('ownercode' , [AuthController::class , 'ownerCode']);
+
 Route::controller(MedicineController::class) -> group(function(){
-    // Route::post('insert' , 'store');
     Route::post('show' , 'show');
     Route::post('getone' , 'getOneProduct');
     Route::post('search' , 'search');
