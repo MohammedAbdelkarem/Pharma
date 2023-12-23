@@ -27,7 +27,7 @@ Route::post('login' , [AuthController::class , 'login']);
 
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('logout' , [AuthController::class , 'logout']);
-    // Route::post('login' , [AuthController::class , 'login']);
+    Route::post('update' , [MedicineController::class , 'updateOneProduct']);
     Route::post('insert' , [MedicineController::class , 'store']);
 });
 Route::post('mail' , [AuthController::class , 'send']);
@@ -42,5 +42,5 @@ Route::controller(MedicineController::class) -> group(function(){
     // Route::post('insert' , 'store');
     Route::post('show' , 'show');
     Route::post('getone' , 'getOneProduct');
-    Route::post('update' , 'updateOneProduct');
+    Route::post('search' , 'search');
 });

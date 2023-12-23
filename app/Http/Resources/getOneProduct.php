@@ -15,6 +15,7 @@ class getOneProduct extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'Scientific Name' => $this->scientific_name,
             'Trade Name' => $this->trade_name,
             'Manufacture Company' => $this->manufacture_company,
@@ -22,6 +23,8 @@ class getOneProduct extends JsonResource
             'Expiered Date' => $this->Ed,
             'Price' => $this->price,
             'Photo' => $this->photo,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
             //'Category' => $this->Category,
         ];
     }

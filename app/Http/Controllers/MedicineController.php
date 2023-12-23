@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Medicine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ShowResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\getOneProduct;
 use Mailgun\Model\Message\SendResponse;
@@ -49,7 +50,7 @@ class MedicineController extends Controller
     }
     public function show(Request $request)
     {
-        $data = Medicine::query()->where('category_id' , $request['id'])->get();
+        $data = ShowResource::collection(Medicine::query()->where('category_id' , $request['id'])->get());
         if ($data->isEmpty()) {
             return $this->SendError(401 , "this category is empty");
         }
@@ -74,7 +75,7 @@ class MedicineController extends Controller
             $data = $request->validate([
                 'price' => ['required' ,'numeric'],
                 'scientific_name' => ['required'],
-                'trade_name' => ['required'],
+                'trade_name' => ['required', 'unique:medicines,trade_name'],
                 'manufacture_company' => ['required'],
                 'available_quantity' => ['required'],
                 'Ed' => ['required' , 'date'],
@@ -86,12 +87,31 @@ class MedicineController extends Controller
                 to edit this product info press here',
             ]
         );
-
-            $data['user_id'] = $userId;
+            $data['id'] = $request['id'];
             Medicine::query()->where('id' , $request['id'])->update($data);
             return $this->SendResponse($data ,201,'medicine has been updated successfully');
         }
         return $this->SendError(401 , "you don't have the permission");
+    }
+    public function search(Request $request)
+    {
+        $searchTerm = $request->input('search');
+        $results1 = getCategoryResource::collection(DB::table('categories')
+        ->where('Category', 'LIKE', '%' . $searchTerm . '%')
+        ->get());
+        $results2 = ShowResource::collection(DB::table('medicines')
+        ->where('trade_name', 'LIKE', '%' . $searchTerm . '%')
+        ->get());
+        if($results1->isEmpty() && $results2->isEmpty())
+        {
+            return $this->SendError(401 , "no results");
+        }
+        $data = [];
+        $data['category'] = $results1;
+
+        $data['medicin'] = $results2;
+
+        return $this->SendResponse($data, 200, 'Search results retrieved successfully');
     }
 
 }
