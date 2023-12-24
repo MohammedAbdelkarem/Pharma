@@ -31,16 +31,12 @@ Route::middleware('auth:sanctum')->group(function(){
 Route::controller(AuthController::class) -> group(function(){
     Route::post('register' ,'register');
     Route::post('login' , 'login');
-    Route::post('owneremail' , 'ownerRegister');
-    Route::post('ownercode' , 'ownerCode');
-    Route::post('mail' , 'send');
 });
 
 Route::controller(ResetUserController::class) -> group(function(){
     Route::post('forget' , 'forgotPassword');
     Route::post('check' , 'checkCode');
     Route::post('reset' , 'resetPassword');
-    Route::get('get' , 'getemail');
 });
 
 Route::controller(MedicineController::class) -> group(function(){

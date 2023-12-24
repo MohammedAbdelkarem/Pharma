@@ -74,28 +74,4 @@ class AuthController extends Controller
         $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
         return $this->SendResponse(null , 201 , 'logged out successfully');
     }
-    public function ownerRegister(Request $request)
-    {
-        $data=$request->validate([
-            'email' => ['required' , 'email']
-        ]);
-        $data['code'] = mt_rand(100000 , 999999);
-        Owner::query()->create($data); 
-
-        Mail::to($request['email'])->send(new RegisterMail($data['code'])); 
-
-        return $this->SendResponse(null , 201 , 'code has been sent successfully');
-    }
-    public function ownerCode(Request $request)
-    {
-        $request->validate([
-            'code' => ['required' , 'exists:owners,code']
-         ],
-         [
-            'code.exist' => 'the code is incorrect'
-         ]
-        );
-        return $this->SendResponse(null , 201 , 'correct code');
-    }
-    //not usre about it:resend function
 }
