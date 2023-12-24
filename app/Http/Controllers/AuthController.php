@@ -22,10 +22,10 @@ class AuthController extends Controller
         $request->validate([
             'username' => ['required' , 'unique:users,username'],
             'email' => ['required' , 'unique:users,email' , 'email'],
-            'mobile' => ['required' , 'unique:users,mobile' , 'min:10' , 'max:10'],
+            'mobile' => ['required' , 'unique:users,mobile' , 'digits:10'],
             'password' => ['required' , 'min:8'],
             'confirm_password' => ['required' , 'same:password'],
-            'role' => ['required'],
+            'role' => ['required']
         ],
         [
             'username.required' => 'this field is required',
@@ -43,7 +43,7 @@ class AuthController extends Controller
         $token = $register_data->createToken("api")->plainTextToken;
 
         $data = [];
-        $data['data'] = $register_data;
+        // $data['data'] = $register_data;
         $data['token'] = $token;
         
         return $this->SendResponse($data , 201 , 'user created successfully');
@@ -63,7 +63,7 @@ class AuthController extends Controller
         $token = $user_data->createToken('api')->plainTextToken;
 
         $data = [];
-        $data['data'] = $user_data;
+        // $data['data'] = $user_data;
         $data['token'] = $token;
         return $this->SendResponse($data , 201 , 'logged in successfully');
 

@@ -44,7 +44,7 @@ class MedicineController extends Controller
 
 
             Medicine::query()->create($data);
-            return $this->SendResponse($data ,201,'medicine has been added successfully');
+            return $this->SendResponse(null ,201,'medicine has been added successfully');
         }
         return $this->SendError(401 , "you don't have the permission");
     }
@@ -89,7 +89,7 @@ class MedicineController extends Controller
         );
             $data['id'] = $request['id'];
             Medicine::query()->where('id' , $request['id'])->update($data);
-            return $this->SendResponse($data ,201,'medicine has been updated successfully');
+            return $this->SendResponse(null ,201,'medicine has been updated successfully');
         }
         return $this->SendError(401 , "you don't have the permission");
     }
@@ -102,7 +102,10 @@ class MedicineController extends Controller
         $results2 = ShowResource::collection(DB::table('medicines')
         ->where('trade_name', 'LIKE', '%' . $searchTerm . '%')
         ->get());
-        if($results1->isEmpty() && $results2->isEmpty())
+        $results3 = ShowResource::collection(DB::table('medicines')
+        ->where('scientific_name', 'LIKE', '%' . $searchTerm . '%')
+        ->get());
+        if($results1->isEmpty() && $results2->isEmpty() && $results3->isEmpty())
         {
             return $this->SendError(401 , "no results");
         }
@@ -110,6 +113,7 @@ class MedicineController extends Controller
         $data['category'] = $results1;
 
         $data['medicin'] = $results2;
+        $data['medicin'] = $results3;
 
         return $this->SendResponse($data, 200, 'Search results retrieved successfully');
     }

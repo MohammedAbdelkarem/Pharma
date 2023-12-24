@@ -40,6 +40,7 @@ Route::controller(ResetUserController::class) -> group(function(){
     Route::post('forget' , 'forgotPassword');
     Route::post('check' , 'checkCode');
     Route::post('reset' , 'resetPassword');
+    Route::get('get' , 'getemail');
 });
 
 Route::controller(MedicineController::class) -> group(function(){
