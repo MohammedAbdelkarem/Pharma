@@ -50,4 +50,14 @@ class User extends Authenticatable
     {
        return $this->hasMany(Medicine::class , 'user_id');
     }
+
+    public function order()
+    {
+       return $this->hasMany(Order::class , 'user_id');
+    }
+
+    public function sub_orders()
+    {
+        return $this->hasmany(Sub_order::class , 'user_id');
+    }
 }

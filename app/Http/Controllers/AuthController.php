@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Order;
 use App\Models\Owner;
 use App\Mail\SendMail;
 use App\Mail\RegisterMail;
@@ -63,8 +64,8 @@ class AuthController extends Controller
         $token = $user_data->createToken('api')->plainTextToken;
 
         $data = [];
-        // $data['data'] = $user_data;
         $data['token'] = $token;
+
         return $this->SendResponse($data , 201 , 'logged in successfully');
 
     }

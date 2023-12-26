@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('owners', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('email');
-            $table->string('code');
+            $table->foreignId('user_id')->constrained('users')->CascadeOnDelete();
+            $table->integer('order_status');
+            $table->boolean('payment_status');
+            $table->boolean('activate_num');
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('owners');
+        Schema::dropIfExists('orders');
     }
 };

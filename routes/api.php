@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ResetUserController;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Http\Request;
@@ -26,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('logout' , [AuthController::class , 'logout']);
     Route::post('update' , [MedicineController::class , 'updateOneProduct']);
     Route::post('insert' , [MedicineController::class , 'store']);
+    Route::post('co' , [OrderController::class , 'createOrder']);
 });
 
 Route::controller(AuthController::class) -> group(function(){
@@ -43,4 +45,9 @@ Route::controller(MedicineController::class) -> group(function(){
     Route::post('show' , 'show');
     Route::post('getone' , 'getOneProduct');
     Route::post('search' , 'search');
+});
+
+Route::controller(OrderController::class) -> group(function(){
+    Route::post('ups' , 'updatPaymentStatus');
+    Route::post('uos' , 'updateOrderStatus');
 });

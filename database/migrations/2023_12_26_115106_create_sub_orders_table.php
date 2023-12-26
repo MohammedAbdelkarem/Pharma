@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_reset_passwords', function (Blueprint $table) {
+        Schema::create('sub_orders', function (Blueprint $table) {
             $table->id();
-            $table->string('email');
-            $table->integer('code');
+            $table->integer('required_quantity');
+            $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('medicine_id')->constrained('medicines')->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_reset_passwords');
+        Schema::dropIfExists('sub_orders');
     }
 };
