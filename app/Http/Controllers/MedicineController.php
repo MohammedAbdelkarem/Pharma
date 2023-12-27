@@ -60,6 +60,7 @@ class MedicineController extends Controller
     {
         $data=[];
         $data['medicine'] = new getOneProduct(Medicine::find($request['id']));
+        
         $category_id = DB::table('medicines')->where('id', $request['id'])->value('category_id');
         $data['category'] = new getCategoryResource(Category::find($category_id));
         return $this->SendResponse($data , 201,"success");

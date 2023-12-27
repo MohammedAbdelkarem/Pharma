@@ -27,7 +27,9 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('logout' , [AuthController::class , 'logout']);
     Route::post('update' , [MedicineController::class , 'updateOneProduct']);
     Route::post('insert' , [MedicineController::class , 'store']);
-    Route::post('co' , [OrderController::class , 'createOrder']);
+    Route::get('co' , [OrderController::class , 'createOrder']);
+    Route::get('gofo' , [OrderController::class , 'getOrdersIdForOwner']);
+    Route::get('gofu' , [OrderController::class , 'getOrdersIdForUser']);
 });
 
 Route::controller(AuthController::class) -> group(function(){
@@ -50,4 +52,5 @@ Route::controller(MedicineController::class) -> group(function(){
 Route::controller(OrderController::class) -> group(function(){
     Route::post('ups' , 'updatPaymentStatus');
     Route::post('uos' , 'updateOrderStatus');
+    Route::post('godf' , 'getOrdersDetails');
 });
