@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ResetUserController;
+use App\Http\Controllers\SubOrderController;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,12 +25,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->group(function(){
-    Route::post('logout' , [AuthController::class , 'logout']);
+    Route::get('logout' , [AuthController::class , 'logout']);
     Route::post('update' , [MedicineController::class , 'updateOneProduct']);
     Route::post('insert' , [MedicineController::class , 'store']);
     Route::get('co' , [OrderController::class , 'createOrder']);
     Route::get('gofo' , [OrderController::class , 'getOrdersIdForOwner']);
     Route::get('gofu' , [OrderController::class , 'getOrdersIdForUser']);
+    Route::post('cs' , [SubOrderController::class , 'createSubOrder']);
 });
 
 Route::controller(AuthController::class) -> group(function(){
@@ -54,3 +56,4 @@ Route::controller(OrderController::class) -> group(function(){
     Route::post('uos' , 'updateOrderStatus');
     Route::post('godf' , 'getOrdersDetails');
 });
+

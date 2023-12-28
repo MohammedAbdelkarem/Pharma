@@ -26,20 +26,55 @@ class OrderController extends Controller
         if($role == 0)
         {
             $old_order = Order::query()->where('user_id' , $userId)->get();
-            if(!$old_order->isEmpty())
+            if(!$old_order->isEmpty()) // check if the old order is exist, then if it is:change the avtive num to 0
             {
-                Order::query()->where('user_id' , $userId)->update([
+                $order_id = DB::table('orders') // get the old order id
+                ->where('user_id' , $userId)
+                ->where('activate_num' , 1)
+                ->value('id');
+
+
+
+                $sub_orders = Sub_order::query() // get the old order id
+                ->where('order_id' , $order_id)
+                ->select('medicine_id' ,  'required_quantity')
+                ->get();
+
+
+                foreach ($sub_orders as $item) {
+                    $medicineId = $item->medicine_id;
+                    $requiredQuantity = $item->required_quantity;
+
+                    $oldQuantity = DB::table('medicines')
+                    ->where('id', $medicineId)
+                    ->value('available_quantity');
+                    
+                    $newQuantity = $oldQuantity - $requiredQuantity;
+            
+                    DB::table('medicines')
+                        ->where('id', $medicineId)
+                        ->update(['available_quantity' => $newQuantity]);
+                }
+
+
+
+
+                Order::query()
+                ->where('user_id' , $userId)
+                ->where('activate_num' , 1)
+                ->update([
                     'activate_num' => 0
                 ]);
             }
     
-            $order_data=[];
+            $order_data=[];             //create the new empty order
             $order_data['user_id'] = $userId;
             $order_data['order_status'] = 0;
             $order_data['payment_status'] = 0;
             $order_data['activate_num'] = 1;
             Order::query()->create($order_data);
         }
+        return $this->SendResponse(null , 201 , "s");
     }
     public function updatPaymentStatus(Request $request)
     {
