@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('sub_orders', function (Blueprint $table) {
             $table->id();
             $table->integer('required_quantity');
+            $table->integer('total_price');
             $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('medicine_id')->constrained('medicines')->cascadeOnDelete();

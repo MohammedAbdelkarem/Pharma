@@ -60,4 +60,9 @@ class User extends Authenticatable
     {
         return $this->hasmany(Sub_order::class , 'user_id');
     }
+
+    public function medicines()
+    {
+        return $this->belongsToMany(Medicine::class , 'medicine_user' , 'user_id' , 'medicine_id');
+    }
 }

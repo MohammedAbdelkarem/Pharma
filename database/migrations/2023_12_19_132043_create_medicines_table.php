@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('available_quantity');
             $table->date('Ed');
             $table->bigInteger('price');
-            $table->string('photo');
+            $table->string('photo')->nullable();
             $table->foreignId('category_id')->constrained('categories')->CascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->CascadeOnDelete();
             $table->timestamps();

@@ -14,6 +14,7 @@ class Sub_order extends Model
         'order_id',
         'user_id',
         'medicine_id',
+        'total_price',
     ];
 
     public function orders()

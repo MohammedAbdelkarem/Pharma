@@ -13,6 +13,7 @@ class Order extends Model
         'order_status',
         'payment_status',
         'activate_num',
+        'price',
     ];
 
     public function users()

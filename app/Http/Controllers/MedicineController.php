@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\favoriteResource;
 use App\Models\Category;
 use App\Models\Medicine;
 use Illuminate\Http\Request;
@@ -31,15 +32,22 @@ class MedicineController extends Controller
                 'manufacture_company' => ['required'],
                 'available_quantity' => ['required'],
                 'Ed' => ['required' , 'date'],
-                // 'name' => ['required'],
-                'photo' => ['required'],
                 'category_id' => ['required'],
+                'photo' => ['image' , 'mimes:jpeg,png,bmp,jpg,gif,svg']
             ],
             [
                 'trade_name.unique' => 'this product is already exists
                 to edit this product info press here',
             ]
         );
+
+
+            if ($request->hasFile('photo')) {
+                $photo = $request->file('photo');
+                $photoPath = $photo->store('photos', 'public');
+                $data['photo'] = $photoPath;
+            }
+
             $data['user_id'] = $userId;
 
 
@@ -60,9 +68,15 @@ class MedicineController extends Controller
     {
         $data=[];
         $data['medicine'] = new getOneProduct(Medicine::find($request['id']));
-        
+
+        $quantity = Medicine::query()->where('id' , $request['id'])->value('available_quantity');
         $category_id = DB::table('medicines')->where('id', $request['id'])->value('category_id');
         $data['category'] = new getCategoryResource(Category::find($category_id));
+
+        if($quantity == 0)
+        {
+            return $this->SendError(201 , "this product is not available now");   
+        }
         return $this->SendResponse($data , 201,"success");
     }
     public function updateOneProduct(Request $request)
@@ -117,6 +131,54 @@ class MedicineController extends Controller
         $data['medicin'] = $results3;
 
         return $this->SendResponse($data, 200, 'Search results retrieved successfully');
+    }
+
+    public function addToFavourites(Request $request)
+    {
+        $user = Auth::user();
+        $token = $request->bearerToken();
+        $userId = $user->id;
+        $role = $user->role;
+        if($role == 0)
+        {
+            $data['medicine_id'] = $request['id'];
+            $data['user_id'] = $userId;
+            DB::table('medicine_user')->insert($data);
+            return $this->SendResponse(null ,201,'medicine has been added to favourites successfully');
+        }
+        return $this->SendError(401 , "you don't have the permission");
+    }
+    public function getFavourites(Request $request)
+    {
+        $user = Auth::user();
+        $token = $request->bearerToken();
+        $userId = $user->id;
+        $role = $user->role;
+
+        if($role == 0)
+        {
+            // $data = [];
+             $data1 = DB::table('medicine_user')->where('user_id' , $userId)->get();
+
+            // $medicine_id = DB::table('medicine_user')->where('user_id' , $userId)->value('medicine_id');
+
+
+            // $data2 = DB::table('medicines')->where('id' , $medicine_id)->select('id','trade_name' , 'photo')->get();
+           // $data['category'] = new getCategoryResource(Category::find($category_id));
+
+            foreach($data1 as $d)
+            {
+                $data2[] = new favoriteResource(Medicine::find($d->medicine_id));
+            }
+            // $data = favoriteResource::collection(Medicine::query()->where('id' ,  $userId)->get());
+            if(empty($data2))
+            {
+                return $this->SendResponse(null ,201,'you have no favorite medicine');
+            }
+            return $this->SendResponse($data2 ,201,'medicine has been retrieved successfully');
+
+        }
+        return $this->SendError(401 , "you don't have the permission");
     }
 
 }

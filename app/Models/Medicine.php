@@ -35,5 +35,10 @@ class Medicine extends Model
     {
         return $this->hasmany(Sub_order::class , 'medicine_id');
     }
+
+    public function user()
+    {
+        return $this->belongsToMany(Medicine::class , 'medicine_user' , 'user_id' , 'medicine_id');
+    }
     
 }

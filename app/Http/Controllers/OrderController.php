@@ -10,6 +10,7 @@ use App\Http\Resources\userResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\orderResource;
 use App\Http\Resources\getCategoryResource;
+use App\Models\Medicine;
 use App\Models\Sub_order;
 
 use function PHPUnit\Framework\isEmpty;
@@ -56,9 +57,6 @@ class OrderController extends Controller
                         ->update(['available_quantity' => $newQuantity]);
                 }
 
-
-
-
                 Order::query()
                 ->where('user_id' , $userId)
                 ->where('activate_num' , 1)
@@ -72,9 +70,10 @@ class OrderController extends Controller
             $order_data['order_status'] = 0;
             $order_data['payment_status'] = 0;
             $order_data['activate_num'] = 1;
+            $order_data['price'] = 0;
             Order::query()->create($order_data);
         }
-        return $this->SendResponse(null , 201 , "s");
+        return $this->SendResponse(null , 201 , "success");
     }
     public function updatPaymentStatus(Request $request)
     {
@@ -179,13 +178,151 @@ class OrderController extends Controller
     public function getOrdersDetails(Request $request) //godf
     {
         
-            
             $data1 = (DB::table('orders')->where('id' , $request['id'])->get());
             $data2 = (DB::table('sub_orders')->where('order_id' , $request['id'])->get());
+
+
+            $data3=[];
+            foreach($data2 as $d)
+            {
+                $data3[] = (Medicine::find($d->medicine_id));
+            }
+
+            foreach ($data2 as &$order) {
+                $order->trade_name = null;
+                foreach ($data3 as $user) {
+                    if ($order->medicine_id == $user->id) {
+                        $order->trade_name = $user->trade_name;
+                        break;
+                    }
+                }
+            }
+
+            $data4=[];
+            foreach($data2 as $d)
+            {
+                $data4[] = (Medicine::find($d->medicine_id));
+            }
+
+            foreach ($data2 as &$order) {
+                $order->price = null;
+                foreach ($data4 as $user) {
+                    if ($order->medicine_id == $user->id) {
+                        $order->price = $user->price;
+                        break;
+                    }
+                }
+            }
             $data = [];
             $data['order'] = $data1;
             $data['sub_orders'] = $data2;
 
             return $this->SendResponse($data , 201 , "success");
     }
+
+    public function historyIdForOwner(Request $request) 
+    {
+        $user = Auth::user();
+        $token = $request->bearerToken();
+        $userId = $user->id;
+        $role = $user->role;
+
+        $products = DB::table('orders')
+        ->whereDate('created_at', '=', $request['start'])
+        ->get();
+
+        if($role == 1)
+        {
+            $data = $request->validate([
+                'start' => ['required' ,'date'],
+                'end' => ['required' ,'date'],
+            ]);
+            
+            $data1 = (DB::table('orders')
+            ->where('order_status', '=', 2)
+            ->where('activate_num', '=', 0)
+            ->whereDate('created_at', '>=', $request['start'])
+            ->whereDate('created_at', '<=', $request['end'])
+            ->get());
+            $user_id = [];
+            $data2=[];
+            foreach($data1 as $d)
+            {
+                $data2[] = (User::find($d->user_id));
+            }
+            if($data1->isEmpty())
+            {
+                return $this->SendError(201 , "no orders");
+            }
+
+            foreach ($data1 as &$order) {
+                $order->username = null;
+                foreach ($data2 as $user) {
+                    if ($order->user_id == $user->id) {
+                        $order->username = $user->username;
+                        break;
+                    }
+                }
+            }
+            $data = [];
+            $data['order'] = $data1;
+
+            return $this->SendResponse($data , 201 , "success");
+        }
+        return $this->SendError(401 , "you are not the owner");
+    }
+
+    public function historyIdForUser(Request $request) 
+    {
+        $user = Auth::user();
+        $token = $request->bearerToken();
+        $userId = $user->id;
+        $role = $user->role;
+
+        $products = DB::table('orders')
+        ->whereDate('created_at', '=', $request['start'])
+        ->get();
+
+        if($role == 0)
+        {
+            $data = $request->validate([
+                'start' => ['required' ,'date'],
+                'end' => ['required' ,'date'],
+            ]);
+            
+            $data1 = (DB::table('orders')
+            ->where('user_id' , $userId)
+            ->where('order_status', '=', 2)
+            ->where('activate_num', '=', 0)
+            ->whereDate('created_at', '>=', $request['start'])
+            ->whereDate('created_at', '<=', $request['end'])
+            ->get());
+            $user_id = [];
+            $data2=[];
+            foreach($data1 as $d)
+            {
+                $data2[] = (User::find($d->user_id));
+            }
+            if($data1->isEmpty())
+            {
+                return $this->SendError(201 , "no orders");
+            }
+
+            foreach ($data1 as &$order) {
+                $order->username = null;
+                foreach ($data2 as $user) {
+                    if ($order->user_id == $user->id) {
+                        $order->username = $user->username;
+                        break;
+                    }
+                }
+            }
+            $data = [];
+            $data['order'] = $data1;
+
+            return $this->SendResponse($data , 201 , "success");
+        }
+        return $this->SendError(401 , "you are not the owner");
+    }
+
 }

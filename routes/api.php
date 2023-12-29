@@ -32,6 +32,10 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('gofo' , [OrderController::class , 'getOrdersIdForOwner']);
     Route::get('gofu' , [OrderController::class , 'getOrdersIdForUser']);
     Route::post('cs' , [SubOrderController::class , 'createSubOrder']);
+    Route::post('fav' , [MedicineController::class , 'addToFavourites']);
+    Route::post('getfav' , [MedicineController::class , 'getFavourites']);
+    Route::post('ho' , [OrderController::class , 'historyIdForOwner']);
+    Route::post('hu' , [OrderController::class , 'historyIdForUser']);
 });
 
 Route::controller(AuthController::class) -> group(function(){
