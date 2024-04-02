@@ -16,8 +16,9 @@ class AuthenticateUserController extends Controller
     public function Register(Request $request)
     {
         $request->validate([
-            'name' => ['required'],
-            'email' => ['email' , 'required' , 'unique:users'],
+            'username' => ['required'],
+            'email' => ['email' , 'required' , 'unique:admins'],
+            'mobile' => ['required'],
             'password' => [ 'required'],
         ]);
 

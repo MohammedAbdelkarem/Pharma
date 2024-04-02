@@ -16,8 +16,9 @@ class AuthenticateAdminController extends Controller
     public function Register(Request $request)
     {
         $request->validate([
-            'name' => ['required'],
+            'username' => ['required'],
             'email' => ['email' , 'required' , 'unique:admins'],
+            'mobile' => ['required'],
             'password' => [ 'required'],
         ]);
 
