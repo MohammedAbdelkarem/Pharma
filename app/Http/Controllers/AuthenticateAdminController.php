@@ -13,6 +13,8 @@ class AuthenticateAdminController extends Controller
 {
     use ResponseTrait;
 
+    
+
     public function Register(Request $request)
     {
         $request->validate([
@@ -20,13 +22,13 @@ class AuthenticateAdminController extends Controller
             'email' => ['email' , 'required' , 'unique:admins'],
             'mobile' => ['required'],
             'password' => [ 'required'],
-        ]);
+        ]); // request 
 
         $data = $request->all();
-        $data['passowrd'] = bcrypt($data['password']);
+        $data['password'] = bcrypt($data['password']); // helper
 
-        $user_data = Admin::query()->create($data);
-        $token = $user_data->createToken('MyApp' , ['admin'])->accessToken;
+        $user_data = Admin::query()->create($data);//services
+        $token = $user_data->createToken('MyApp' , ['admin'])->accessToken;//helper for user and for admin
         $user_data['token'] = $token;
 
         return $this->SendResponse($user_data , response::HTTP_CREATED);
