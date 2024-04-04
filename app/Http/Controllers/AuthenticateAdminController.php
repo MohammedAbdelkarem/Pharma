@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AdminEmailRequest;
 use App\Models\Admin;
 use Laravel\Passport\Token;
 use Illuminate\Http\Request;
@@ -13,8 +14,10 @@ class AuthenticateAdminController extends Controller
 {
     use ResponseTrait;
 
+    public function Email(AdminEmailRequest $request)
     
-
+    {
+    }
     public function Register(Request $request)
     {
         $request->validate([

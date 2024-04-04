@@ -13,6 +13,7 @@ class AuthenticateUserController extends Controller
 {
     use ResponseTrait;
     
+
     public function Register(Request $request)
     {
         $request->validate([
