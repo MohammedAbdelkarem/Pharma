@@ -17,7 +17,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('admin/register' , [AuthenticateAdminController::class , 'adminRegister']);
+Route::post('admin/register' , [AuthenticateAdminController::class , 'register']);
+Route::post('admin/sendcode' , [AuthenticateAdminController::class , 'sendCode']);
 Route::post('admin/login' , [AuthenticateAdminController::class , 'adminLogin']);
 Route::group(['prefix' => 'admin' , 'middleware' => ['auth:admin_api' , 'scopes:admin']] , function(){
     Route::post('logout' , [AuthenticateAdminController::class , 'adminLogout']);

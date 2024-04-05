@@ -5,14 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Laravel\Passport\Token;
 use Illuminate\Http\Request;
+use App\Http\Requests\CodeRequest;
 use Illuminate\Http\ResponseTrait;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\UserEmailRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticateUserController extends Controller
 {
     use ResponseTrait;
     
+    public function SendCode(UserEmailRequest $request)
+    {
+        //enter the email
+        //send email to the user which has the verificatoin code
+        //store email in the cahce
+    }
+
+    public function CheckCode(CodeRequest $request)
+    {
+        //check if the code the same code of the email in the cache in the database and return a response
+    }
 
     public function Register(Request $request)
     {

@@ -1,0 +1,1371 @@
+intro to Laravel framework:
+
+Laravel framework is built by php programming language.
+
+it has a ready codes to run and work.
+
+the framework in general will make it easy to write and complete our project.
+
+Xampp:local server on the computer to build our project and test it before upload it on the internet.
+
+php storm: the most suitable ide for php.
+
+composer:by it we will install laravel framework enviroment and loading the packages.
+
+topics that we ganna learn:
+
+-Routing
+
+-Blade System 
+
+-Controllers
+
+-Migrations
+
+-Query Builder
+
+-Eloquent Models 
+
+-Validation 
+
+-Relationships 
+
+-Authentication
+
+-Middleware
+
+-Seeders 
+
+-Factory
+
+-Sending Emails 
+
+-Events 
+
+-Listeners
+
+-Notifications
+
+-Traits
+
+-Helpers 
+
+-Queue
+
+-Files Systems 
+
+-Laravel Testing
+............................................. 
+any laravel project content:
+
+note that we will just now talk about the necessary folders, the rest of them we will be 
+familiar with them soon.
+
+app folder:
+ contatin http folder:contain controller and middleware folders.
+ models.
+
+config:the configration folder about our project.
+        the important files:app , auth , filesystems , mail , queue , view.
+
+database:
+        factory:for testing and fake data.
+        migrations.
+        seeders.
+
+public:contain the frontend files.
+
+recources:for pages hierarchy.
+
+routes:to structure the moving between  the pages.
+
+storage:for storing the files of the projects,pics for example.
+
+vendor:files will be by default with laravel.
+
+env file:contain important settings and info's about our project.
+................................................
+Routes basics:
+
+the main goal of routing is to moving between the pages.
+
+inside routes/web.php:we have the routes inside this file.
+
+we have method called get('url' , function(){
+        implmentation to applied when we go to 'url'
+});
+
+we may see the implmentation like:return view('page_name.blade.php')
+which mean that we will return this page from views floder.
+
+we can also change the links in welcome page or in any page.by modifing html code in views folder files.
+
+so the route is just a way to be defined.
+................................................
+Routing request function:
+
+we use post function only when the way is contain a data retrieving from a form or something.
+so it's simply a request,where we have a data , otherwise if we don't have a data we use get.
+
+summary:the post method is used when we came to this route from a form(meaning that there is a data)
+................................................
+Routing with parameters:
+
+we can do the previous thing (sending the data)using get method.
+
+it's by passing the data as a parameters to the function of get,
+
+and we can do somethings with the parameters like increase it or print it or....
+..................................................
+introduction to blade system:
+
+if you notice,when we were deal with the views, it was with the tail:.blade.php 
+
+blade:to allows us to write a blade code, blade code is much esaier than the native or pure php code.
+there are a lot of rules about this in the doc.
+
+the blade system will refactor our blade codes into pure php code, and we can find the pure code in :storage/framework/views/one of the files.
+
+the blade system or template engine will help us a lot in writing the codes and save the time.
+...................................................
+template inheritance:
+
+in our website, suppose that we have a nav bar and we need it to appear at all the other pages.
+
+so to do something like that we will have some of duplication in the code.
+
+well laravel give us a pretty way to do that, first of all we have to put this nav bar html code into a separated file then extends it in the other pages,
+we have firstly to create layouts folder in the views folder and then inside this folder we will put our nav bar file.
+
+then in the other pages we will write: @extends(layouts.navbarfilename)
+and then the nav bar will appear at this page.
+
+we can also modify the info's of the pages like the title and the content and the other things using section() and yield .
+
+and the @parent is to use the parent content + our customized content.
+.......................................................................
+introduction to controllers:
+
+suppose that we have an actions to apply in our project, like create or delete or edit.
+
+simply we put it in the controllers.
+
+and we should do that to apply MVC paradigm.
+...........................................................
+create first controller:
+
+to create a controller by easy way, just use the commands to do that.
+
+so by the command:php artisan make:controller controller_name, we will create a controller file in the path:
+app/http/controllers 
+
+and in the controllers we will put all our control functions and the other actions.
+
+and in the routes we can access the controllers by:
+
+Route::controller(controller_name::class) -> group(function(){
+    Route::get('url' , 'function name from our controller class');
+});
+....................................................................
+create resource controller:
+
+as we said before, we use the controller to put into it our action functions,
+
+well in laravel we have a ready controller and have already all the actions:called recource controller.
+
+we can create recource controller by the command:php artisan make:controller controller_name -r 
+
+and a new recource controller will be in the controllers folder.
+
+when we use the route of this controller in web.php, there is no need to write every thing about the functions like before, we just write:
+        Route::resource('url' , controller_name::class);
+and by that all the other functions will be ready to use.
+
+note that previously we were add all the routes of the controller in web.php, but in the recource controller we write in the route page:
+just one line: Route::resource('url' , controller_name::class);
+and then if we need some function from this controller, we write in the current page:url.function_name.
+
+so that's good because we will not make a route manually for every function in the controller, like the normal controller.
+
+note:
+when we need to edit some data, we send it as a request , so the recieving route will be post, but the recource don't support the post route,
+so in this case , in the html form(which will take the data and send it, like edit from for example), beside the action , the method will be post,
+and this will cause an error because post is not supported in recource controller, so we just will write before the fields:
+        @method(PUT)
+because we edit something, and PUT is used when we edit something.
+note that we can do the same thing with the other types of controller(normal controller).
+.............................................................
+Routing using except and only:
+
+if we need to use just a bunch of functions from recources functions, we can do that using only or excpect,
+so only allows us to use just the mentioned funcions,while excpect allows us to use all the functions excpect the mentioned functions.
+
+the formula:
+        Route::recource('url' , controller_name::class) ->only or excpect([
+                the mentioned function , .. , ..     
+        ]);
+..............................................................................
+create invoke controller:
+
+we can create invoke controller by the command:php artisan make:controller --invokable 
+
+we use invoke controller to do single action.
+
+this controller will have one function called:invoke.
+
+when we use this function we just mentioned the name of the controller and laravel will defaultly go to invoke function, so there is no need to mention the name of the function as a parameter in get() in routing.
+
+so the formula:
+        Route::get('url' , invokeControllerName::class);
+.........................................................................
+Construct in controller:
+
+we use construct in controller to achieve some actions or things we need to do,
+like specifing who can access the controller, or dealing with some data or.... 
+and soon we will cover all of that.
+....................................................................
+introduction to Migrations:
+
+migrations === dealing with databases.
+
+in the path:databases/migrations: we find some default files like tables.
+
+in env file, we will find most of the configrations.
+
+before we were deal with database by phpMyAdmain, now we will deal with it using laravel most of the time.
+.................................................................
+create first migration:
+
+we can create the database from:phpMyAdmin....new...create,
+
+we should edit the database name in env file to our created database, it's from:DB_DATABASE
+
+now our database is empty, we need to move the default tables in migrations to this database,
+we do that using the command:php artisan migrate.
+
+we can know the status of the databases by the command:php artisan migrate:status 
+...................................................................
+create first table:
+
+as we know, the tables exists in database/migrations 
+
+we will create a table by the command:php artisan make:migration create_tablename_table
+
+then before we push it in the database(by the command php artisan migrate), we can add some columns by the function up() in the table file, which located at mogrations folder.
+
+we add a new column by the formula: $table->datatype('column_name').
+
+we can set a default value by: $table->datatype('column_name')->default(the_default_value).
+
+don't forget to push the table into the database after creating by php artisan migrate command.
+
+...........................................................................
+migrations command:rollback - fresh - refresh 
+
+php artisan migrate:rollback: it's like the ctrl + y, it's to return step back (back from pushing all the tables ....).
+php artisan migrate:rollback --step(num):to put the num of rollbacks (back from pushing one taple or one migration in general in the single step...)
+php artisan migrate:rollback --batch(the number of the step):to return back from a specific step.
+php artisan migrate:reset:it's to make rollback to all the steps.
+php artisan migrate:refresh:it's to rollback onetime then migrate(back from pushing one table if the step(1) to the database),
+but note that all the data inside the tables will be deleted.
+php artisan migrate:fresh;it will drop all the tables and migrate it again, but all the data will be deleted.
+
+the difference between fresh and refresh: refresh will rollback then delete, while fresh will directly delete.
+
+refresh and fresh commands so dangerous, be careful when using them.
+..............................................................................
+command add column:
+
+as we know,migrations folder contain the migrations of the tables,
+well we can create a migrations to add a column in a table by the command:add_columnname_to_tablename. 
+
+and in it's migrartion,we will add in the up function the things we need to happen when we migrate this migration(by php artisan migrate),
+and in the down function we will put the things we need ot happen when we rollback.(like delete the added column or something).
+
+remember that the previous way to add a column is by the main migration of the table,in the up function.
+.........................................................................................
+create foreign keys using migrations:
+
+suppose that we need to combine two tables or put a relationship between them by the id,
+well laravel do that in a pretty way, it's by something called foreign.
+
+so in the first table we have the id column, now in the second table we dont have it,
+so we need to construct it and put a relationship between it and the id column in the first table.
+
+so in the second table migration we write it by two ways:
+
+the classic way:
+        $table->unsignedbiginteger('new_id_column_name');
+        $table->foreign('new_id_column_name')->references(id_column_name_but_on_the_first_table)->on('first_table_name');
+the pretty way:
+        $table->foreign('new_id_column_name');
+        or:
+        $table->foreign('new_id_column_name')->constrained('the_first_table_name');
+if we delete an instance(user or something) from the first table and we need to delete all the related informations from the second table(like posts table),
+then we use CascadeOnDelete() function like that:
+        $table->foreign('new_id_column_name')->CascadeOnDelete();
+.......................................................................................
+introduction to query builder:
+
+previously in migrations, we were dealing with the database using a formulas,
+well in the query builder or the -Eloquent, this will be much esaier than before.
+we will be able to take the data from the user by an html form for example, and then insert these data to the database.
+
+note that query builder and eloqunt both of them are for dealing with databases, but everyone of them is used for some different purpose.
+......................................................................................
+insert data with query builder:
+
+the method which have the $request parameter, will recieve a data or request from a form or something,
+then it will return the $request for example, or insert it into the database,
+
+we can insert the data into the database by the formule in the controller as a method:
+        DB::table('table_name')->insert([
+                        'column_name_in_the_database' => $request->the name of the input in the html code ,
+                        ......... ,-
+        ]);
+so here we add to the column:the recieved value(which is in $request), which it's name in html code is ....
+.......................................................................................
+get the data with query builder:
+
+we can get the data and show it, it's done by the formule in the controller as a method:
+        $var = DB::table('table_name')->get();
+        return $var; (to return the data and show it as simple way)
+        or:
+        return view('page_name.blade.php' , compact('var')); (to send us to view page, and send the variable which has the table data by the compact() method to the view page, 
+                                                              and then we can show the sended data ($var) in a pretty way using foreach and bootstrap or something...)
+...........................................................................................
+show the data in front of the user to edit it:
+
+here we will know how to show the data inside the fields to edit it by the user,
+it will appear just like when you need to edit your informations on facebook, you will see the previous data inside the fields.
+
+well when we need to edit,we will move to new page, then in this page we will show the html normal form, but with the previous data(the default data of the user).
+
+we know that to fill the fields in html , we make that by the 'value' attribute,
+so simply we will set the default data to these attribute, we can get the data to the view page to deal with it(in our case here to set it to 'value' attributes) by the compact() method.then we just use it.
+
+note that here we will show the data of one user, so we need the data of just one user, we can get it by the formule in the controller as a method:
+        $var = DB::table('table_name')->where('id' , $id)->first(); (ot get the data of the user which his id equal to the sended id)
+        return view('page_name' , compact('var'));
+
+next we will learn how to update this data by the user and save the updates.
+................................................................................................
+update the data with query builder:
+
+as we know, the action attribute in html is to set the link that we will go to it when submit the form.
+
+well we can use that to update the data.
+
+we will put a rout there and this route will lead us to update function , which take a request(the new data) and the id as a parameters, then we will updata it by the formula:
+        DB::table('table_name')-> ->update([
+                        the_columne_... => $request->the name of the input at html code         
+        ]);
+...............................................................................................
+delete data with query builder:
+
+we can delete the data from the table by the formula:
+        DB::table('table_name')->where('id' , $id)->delete();
+and then the row of hte $id will be deleted.
+
+note that we maybe will need to choose the users with the $id mor than 3 for example, we can do that by :
+        where('id' ,(> , < , >= , <=) $id)
+................................................................................................
+delete all data with query builder:
+
+it's just like the previous but here we will not specifiy a user(row) to delete it from the table, we will just delete all the table, it's by the formula:
+        DB::table('table_name')->delete();
+
+note that after deleting, if we go to the table we will find that the id of the inserted user is not 1, even that he is the first user, we will solve this problem by Truncate:
+        DB::table('table_name')->truncate();
+and then the data will be deleted all of it, but the id will start again from 1.
+.................................................................................................
+introduction to -Eloquent:
+
+previously, we were dealing with the database using the query builder,
+well the eloquent will allos us to deal with the database, but in easy way , and also to achieve the MVC concept.
+
+so eloquent just like, or it is the model, it's main job just ot deal wiht the database,
+
+note that the query builder and the eloquent , both of them has it's time and cases to use,
+
+sometimes it's better to use query builder, but some other times, it's better to use eloquent.
+
+another name to the eloquent:ORM: which mean object relational mapper.
+
+eloquent is easier when we use it with the relationships,which we will cover it soon.
+
+so Laravel includes Eloquent, an object-relational mapper (ORM) that makes it enjoyable to interact with your database.
+
+When using Eloquent, each database table has a corresponding "Model" that is used to interact with that table.
+
+In addition to retrieving records from the database table, Eloquent models allow you to insert, update, and delete records from the table as well.
+........................................................................................................
+create first model:
+
+so as we said, every table will has it's own model, we can create a table and it's model by the command: php artisan make:model model_name -m 
+we can also make a table and a model to this table and a controller by the command: php artisan make:model model_name -mc 
+and to let hte controller br a recource controller: php artisan make:model model_name -mcr 
+
+note that model_name should be a captial letter with it's first char. and the model_name should be single, it's programming styles.
+and the created table will be by default the same name of the model but not single as the model,
+for example: if we have Post model, then the table name will be by default:posts. 
+..........................................................................................................
+table_name primary_key incrementing_false timestamp_false:
+
+we said before that the table name will be the same as the model name but not single,
+well suppose that we create a table for that model but with different name, so nw laravel will not recognize or know that this table is for that model(because there are not the same name but not single for the table_name like we know),
+so to solve that we can add the following statement in the model:
+        protected $table = "the_table_name"
+
+also we can replace the default id with a new_id by:
+        in the migration:$table->integer('new_id')
+        in the model:protected $primaryKey = 'new_id'
+
+we can stop the auto increment by :
+        in migrartion:$table->id()->unsigned();
+        in model:public $incrementing = false;
+
+we can remove the default timestamp column, by put it as a comment in the migration and in the model we write:
+        public $timestamps = false;
+
+we may work with another type of the databases(sqlite for example), so here we need to change the connection , we do that by writing in the model:
+        protected $connection = 'sqlite';
+and we can know the type of our database or connection and change it if we want from:
+        config/database.php : env
+
+note that most of the mentioned things above(int this lesson) may will not work , that's depending on the version of laravel or it maybe will be mysql issue,
+just search always and then pick the solution.
+..........................................................................................................
+insert data using model save:
+
+we can add the data to the database using the following way in the store function in controller:
+        $obj = new model_name();
+        $obj->column_name_in_the_table = $request->input_name_in_html_form;
+        $obj->save();
+there is another way to do the insert by the model, we will cover it soon.
+.........................................................................................................
+insert data using model create:
+
+we can insert the data by the following code which will be in the store function:
+
+model_name::create([
+        'column_name_in_the_table' => $request->input_name_in_html_form
+        ]);
+and in the model we should put the columns that we need to add a values to, like that using $fillable[]:
+        protected $fillable = ['columns_name' , ......];
+and only the columns we put in the $fillable will be able to recieve the values.
+
+suppose that we have a lot of columns and we need to implement it's store function, so instead of writing all of those columns_names in the $fillable[], we have another array 
+called $guarded[] , inside it we will put the columns that we don't need to use, so we can use it and don't put anything inside it, and then all the columns will be able to recieve the data.
+
+we can also instead of writing all the quiries in the create([]), to do all of them in one statement, this statement is:
+        model_name::create($request->all());
+but this will not work unless the_name_of_the_column equals to the_name_in_the_html_form 
+...................................................................................................
+select data to get it using all or get:
+
+we can select the data and retrieve it from the database by the following two statements:
+        $var = model_name::all();
+        or:
+        $var = model_name::get();
+and then we can pass the data to antoher view or something and show it in pretty way using compact($var).
+....................................................................................................
+select a specific row of the data:
+
+in the previous lesson we have select all the data from the table, well now we will know hwo to just select one row (to edit this row or something),
+
+we can do that using one of the following statements:
+        $var = model_name::findorFail($id)
+        or:
+        $var = model_name::where('id' , $id)->first();
+both of those statements will retrieve the data from the row with the sended id;
+note that the first statement will just work when we send an id, but the second one will work with the id or name or anything.
+
+we can use the row that we have bring to edit it or show it or anything else...
+...................................................................................................
+update the data using models:
+
+after we pass the data from a form to some controller, we need to update the data, usually using update function in the controller,
+
+so inside this function (which will recieve the request and the id), we can update the data using one of those ways:
+
+$var = model_name::findorFail($id); //we write this line in those ways firstly
+and then:
+
+the first way:
+
+$var->column_name_in_the_table = $request->input_name_in_html_form ;
+$var->save();
+
+the second way:
+
+$var->update([
+        'column_name_in_the_table' => $request->input_name_in_html_form ,
+        (or if we want to update all the data in one step:)
+        $request->all();
+        (but note that this way the same name for the column in the table and the input in html form)
+        ]);
+........................................................................................................
+delete data using models:
+
+we can delete a row in the table using one of those statements, which will be written in the destroy function:
+
+model_name::findorFail($id)->delete();
+or:
+model_name::destroy($id);
+
+note that the delete button can't be (a , href) as we know, we should make it as a submit button inside a from.
+
+note2:when we do the delete, the data will be deleted from the interface only, but in the database it will remain 
+
+to delete it from the database also we will use something called: forcedelete,  we will cover it soon.
+......................................................................................................
+soft delete data using models:
+
+we can delete the data from the table and then add it into another table called archive for example, so in case the user want to retrieve his data he can do that easily because the data is 
+exist in the archive.
+
+well in laravel we can do that with something called: soft delete.
+
+with this feature, when we delete the data from the table(a row for example), then the data will be removed from the interface, but in the database it will remain, we do that with the 
+sensitive and important data.
+
+to do that , in the model we will use the trait:softdelete. and in the table we will add the column:softdelete(which will appear in the table as a:deleted at).
+
+and then when we delete a row for example from this table, it will deleted from the interface only, but in the database it will remain and the column(deleted at)will be filled with the data of delete.
+
+and soon we will know how to retrieve the deleted data from some table.
+.................................................................................................................
+get data softdelete using models:
+
+we can get the data that we have deleted(deleted from interface only) by the formula:
+        $var = model_name::onlyTrashed()->get();
+and then we can show the data or anything else.
+..................................................................................................................
+restore the data using models:
+
+we said before that we have delete the data just from the interface, so we can restore the data to this interface,
+
+we can do that to a specific row or to all the data:
+
+to a specific row:
+        model_name::withTrached()->where('id' , $id)->restore();
+to all the data in the table:
+        model_name::withTrached()->restore();
+...........................................................................................................
+forcedelete the data using models:
+
+when we make the normal delete(delete() , destroy()), the data will be deleted judt from the interface, not from the database,
+
+so to delete the data from the database(after delete it from the interface), we do it by the formula:
+        model_name::withTrached()->forcedelete(); :to delete all the data in the table. 
+        model_name::withTrached()->where('id' , $id)->forcedelete(); :to delete a row from the table. 
+...........................................................................................................
+query scoops using models:
+
+suppose that we have a query to do something,retrieve the data for example, but at the same time with some conditions(where(....))
+
+so, we can put the conditions in the model into something called: scoop, it's like that:
+        public funcion scoopscoopname($query)
+        {
+                return $query->where()->where().....
+        }
+and in the main controller or function we write:
+        $var = model_name::scoopname->first();
+so it is just like that we put the conditions in a scoope and then we will call this scoope whenever we want
+
+note that the scoope will be written in the model, and usually used in the controller
+
+note that we can make a lot of scops, and then instead of putting them in the model, we can put them in a trait and then call them by using this trait in the controller.
+.......................................................................................................
+validation in controller:
+
+validation is like a conditions on the inputs that we recieve, we can for example make the name field required,specifiy the max and min length of it, and a lot of other things,
+
+we can do the validation in the controller or in the request, soon we will cover it in the request, but now we will talk about it in the controller.
+
+in the suitable method in the controller, we will do the validation by :
+        $request->validate([
+           'column..' => ['required' , 'unique' , ........]     
+        ]);
+and it's important to know where exactly we will put it(in the suitable method in the controller).
+
+in case the conditions that we have put(by the validation) has benn broken, we can print an error message that describe the problem(like required field or not unique or any other thing).
+
+and we can do that by putting the following formula int the html code:
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+so it will print any error will happened.
+......................................................................................................
+form request validation:
+
+suppose that we have a lot of conditions or rules, so putting it in the controller like the previous way will be unpretty and hard.
+
+instead of that we can put all the rules in something called:request. and it will be in the path:app/http/requests 
+
+we make the request file by the command:
+        php artisan make:request requestFileName
+
+inside this request file we will find method called:authorize, and it should be true so the input or the validation can recognize it.
+
+we find also method called:rules, inside it we will put our rules at the same way we were put them in the controller.
+
+and then the data that we want to validate it, we will make it's request type:the name of the request file, for example:
+the request file name: StoreFaceRequest 
+
+the store code in the controller:
+    public function store(StoreFaceRequest $request) // note that the type of $request is the same as the request file name.
+    {
+        // $obj = new Face();
+        // $obj->name = $request->handle;
+        // $obj->password = $request->pass;
+        // $obj->save();
+        
+        or:
+        Face::create([
+            'the_name_in_the_html_form' => $request->handle,
+            'password_name_in_html_form' => $request->pass
+        ]);
+        return redirect('face');
+    }
+
+in the request file name, the message mehtod formula that we can add it to customize the error messages:
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'the message',
+            ...................................
+        ];
+    }
+and the rule method will be something like that:
+    public function rules(): array
+    {
+        return [
+            'the_name_in_the_html_form' => 'required',
+            'password_name_in_html_form' => 'required'
+        ];
+    }
+
+note that the main error messages will be exist in the path:lang/en/validation.php 
+
+we also have something called:old,
+this feature will save the written data in the input fileds when the user fill it, so the user will not be forced to rewrite the data again in case somthing wrong happend.
+
+we do that by add the following statement in the input section in html code: value="{{ old('input_name_in_html_form') }}", so simply we will make the value of this input like the old value(which the user enter it).
+............................................................................................................................
+Relationships:
+
+relationships in general is between databases.
+
+one to one: the facebook user has one profile.
+one to many: the facebook user has many posts.
+many to many: the posts has more that one category, and the categories has more than one post.
+for example: we have post which is in history and political category, and a the same time the history category has more than one post,and the same thing to politicall category.
+..................................................................................................................................
+one to one relationship:
+
+suppose that we have a user and this user has a name,password and phone_number.
+well we need to put the phone_number in a separated table, and then combine those tables by the id.
+
+we will do that by:
+-create user table and model.(contain the name and password)
+-create phone table and model.(contain the phone number)
+-in the phone table:we will add new column which will be the id from the user table, and it's type will be foreignId, and to combine this column or make it the same with the id_table in user table,
+(or in other words,make this table refer to the id table at the user table), we write in the phone table:
+    $table->foreignId('user_id')->references('id')->on('users')->CascadeOnDelete();
+and then in the table that will have one thing(the user table which have one phone number), we will add (hasOne)in the model:
+    public function phone()
+    {
+        return $this->hasOne(Phone::class);
+    }
+and in the table that has or own this one thing(phone table which have the number:), we will add(belongsTo) in the model:
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+and then , when we select and get the data from the user table(for example), we will be able to access the number of phone by these data from the user table, because the tables are combined together,
+and also we can access the user data from the phone data.
+
+note:
+
+as we know, the foreignId will be the frist_table_name_id(in our case: user_id), and laravel will by default understand that there is a relationship when we do this relationship in the models,
+but suppose that we change the name to another name, then to make it understoodable that there is a relationship, we need to add a new thing in the models, this thing is the new name that we put,
+and we will add it in the first table model, so in our case here, we will add in the user model:
+        public function phone()
+        {
+                return $this->hasOne(Phone::class , 'new_id_column_name');
+        }
+it's actually like the previous thing, but we just add a new parameter in the relationship statement which is the new_id_column_name.
+.....................................................................................................................................
+one to many relationship:
+
+previously we said that one to one relationship is one thing related to one other thing,
+well here in one to many relationship, it;s simply onething has a reltionship to manythings.
+
+for example:post with comments,paper with lines.
+
+to achieve that we do the same previous thing but in the first model table we put: hasMany instead of hasOne,
+let's take an example, we have a post and it's comments, well the post will be in a separated table and the comments will be in other table.
+no in the post migration we will add a title column, in the comment table we will add a content column , and an foreignId column which refer to the id column in the post table, of course we do that 
+to combain those tables or to make a relationship between them.
+now in the post model we will write:
+        public function comments()
+        {
+                return $this->hasMany(Comment::class);
+        }
+and in the comment model we will add:
+        public function post()
+        {
+                return $this->belongsTo(Post::class);
+        }
+and in the controller we will write the same thing before.
+
+note that we can modify this data and show it as we want in an interface or html codeor somthing.
+....................................................................................................................................
+many to many relationship:
+
+simply, there is ONETHING have a relationship with other THINGS, and at the same time those THINGS has a relationship with some other THINGS,
+
+for example:we have website, the members can sign in as a user or as an admin or as a seper_admin.
+
+there are members, well and there are roles(user,admin,super_admin).
+
+the one member can has one role or more, that's why the role will have one user or more.
+
+for example:
+        members: ali , ahmed 
+        roles: user , admin , super_admin 
+
+we firstly need to combine those two tables and then we will combin them as we want.
+
+so to achieve that, we need to create a third table as a pivot, which will contain the user_id and the role_id, we usually name it:user_role , or: user_role_pivot.
+now when we need for example make ali user, we will do that in the pivot table, by giving his id the role id.like: giving ali the user role id, so now ali will become a user.
+
+in the first and second table we will not refer to something like the previous relationships, we just create a pivot table and then we will create two columns of integer datatype.
+
+in the first and second tables models:we have one statement, which is:belongs to many.
+
+and as we know in this statement we can add second parameter which is usually the new name of the table in case we chnge something, well in  relationship, this parameter will take the new name of the pivot table in case we change it from the default name which is:(the_first_table_name_id__the_second_table_name_id)
+
+we can also as we know show the data in a view or using bootstrap or somthing, but the main thing about those three relationships that we cover id to know how to relate them.
+......................................................................................................................................
+Accessor and Mutator function:
+
+those two functions are for modifing the data, but there is a difference between them.
+accessor function will accesss the data in the database and then customize it to show(note that the data format in the database will not changed),
+while the mutator funcion will modify the data before inserting it into the database(here the data format in the database will be changed).
+
+so when we retrieve the data from the database, it will be in the accessor format, if we don not have accessor, then it will retrieved as the mutators format(like the orginal format in the data base)
+and if we do not have accessor or mutators then it will be retrieved just like it's orginal shape in the database(without changes).
+
+some of the shapes of modifing the data:make the name uppercases, make the first letter upper,......
+
+to use the accessor function and modify the
+data in the database, we have to use it in the table model. this function has been changed as a syntax , we will cover laravel 8 and 9 syntax:
+so first of all suppose that we have a column in the table called:name, and we need to make all the names upper:
+
+laravel 8:
+public function getCOLUMN_NAMEAttribute($value)
+{
+        return strtoupper($value);
+}
+
+laravel 9:
+protected function COLUMN_NAME(): Attribute       //note that the first letter from the COLUMN_NAME should be upper case(convention name).
+{
+        return Attribute::make(
+                get: fn (string $value) => strtoupper($value),
+        );
+}
+
+note that the laravel 8 syntax will work with me.
+....................................................................................................................................
+Mutator functino:
+
+mutotor function will modify the data before inserting it into the database.
+there are also as before, two syntaxs to do that, one in laravel 8 and the other in laravel 10
+
+laravel 8:
+public function setCOLUM_NAMEAttribute($value)
+{
+        $this->attributes['name'] = strtoupper($value);
+}
+laravel 9:
+we can make it inside the previous functoin, but it will be set instead of get.
+protected function COLUMN_NAME(): Attribute
+{
+        return Attribute::make(
+                set: fn (string $value) => strtoupper($value),
+        );
+}
+.......................................................................................................................................
+Authentication:
+
+it's simply about the log in and the sign up.
+
+we can do it manually but that will be so hard, so instead of that we will use a ready packages for that.
+
+we have three ways to achieve the Authintication in out project:
+Ui , Breeze , JetStream.
+Breeze is the most common used , also the others are good.
+
+note: in most of those ways of -Authentication(JetStream , breeze , ui), we will have the commands : npm install and npm run dev.
+
+well the command npm run dev will allows us to run the authentication system, but when we stop it, the system will not run.
+
+so to pass that, we can by the command(npm run build) , put all the files of the system inside our project and there is no more need to write (npm run dev) every time we need to deal with authentication.
+.....................................................................................................................................
+Authentication Ui:
+
+we will go to github/lravel/ui, there will be all the steps to install ui auth system and load the necessary packages.
+
+after that, we will find  a new routes for that, also there is a new blade interfaces for the auth system, and also we will find a HomeController.
+inside this controller we will find a construct, and this will prevent the user from accessing the home page, so he can access it only if he log in.
+suppose also that we need ot change the system of registering, and we need to do it manually,so here we need ot stop the current registering systrm, we can do that 
+from the routes by making trhe register == false, in the route auth:
+                Auth::routes(['register' => false]);
+
+we can also achieve the forgooting of the email but soon when we cover email topic.
+......................................................................................................................................
+Authentication Breeze:
+
+in laravel website we will find the steps of install breeze auth system.
+
+it's like the ui, but there is something special about breeze, which is that the controller and the routes will be in the source code so that we can edit whatever we want easily.
+......................................................................................................................................
+Authentication JetStream:
+
+it's so amazing and contain a lot of advanced thing,like two step verify, log out from the other devices, show the phot of the user, working with team, and alot of other things.
+
+we can go deep inseide this system by it's website, and also there we will find the steps of the installation.
+..........................................................................................................................................
+create first middleware:
+
+middleware is like something give us the permession to do something or not.
+for example:we have a specific page and we just want the admins to access it.
+
+the middleware mainly used with the routes, so it will allows us to go through that route or not.
+
+we create a middleware by the command:php artisan make:middleware middleware_name. 
+after that we will find the middleware file in the path:app/http/middleware 
+
+now we have difined our middleware, but the system will not recognize it unless if we make middleware registeration.
+
+and to do that:we have to go to app/http/kernel.php 
+
+and in the MiddlewareAliases we will our middleware_name(or a specific name, this name will used in the routes to call this middleware) and the path of the middleware:
+        'our_name' => \app\http\middleware/middleware_name::class
+and then we can use this middleware in the routing page by it's name:
+for example: Route::get('url' , [UserController::class , 'index'])->middleware('our_name').
+
+next we will use the middleware in checking the user status before going through the route.
+..............................................................................................................................................
+using the middleware:
+
+simply, we will write in the middleware file our conditions, the conditions to go to the route.
+
+suppose that we have a bunch of routes and we need to apply some middlewares at them, we can do that using the middleware group:
+
+Route::middleware(['middleware1' , 'middleware2'])->group(funcion(){
+        routes...... 
+})
+note that when we write the conditions in the middlewarefile, it will be little complex, it's better to search about using the middleware more.
+...............................................................................................................................................
+Seeder , Tinker and Factory:
+
+well,sometimes we need to put a data inside our database, but we need to do it directly without form or something.
+
+we can do that using the seeders or the tinker.
+
+factory also will be useful but it will put a fake data,while seeders and tinker will put our customized data.
+
+the difference between seeder and tinker is that seeder will add the data by making file called seeder then inside it we will put our data, while tinker will done using the commands.
+.............................................................................................................................................
+Seeder:
+
+to create a seeder, we write the following command:
+        php artisan make:seeder TableNameSeeder 
+after that we will find a seederfile inside :database/seeders 
+
+in this file we have run() method,inside this method we will put our data , so when we call the seeder , these data will pushed in the database.
+we put the data like that:
+                public function run(): void
+                {
+                        User::create([
+                                'name' => 'ali',
+                                'password' => '123'
+                        ]);
+                        User::create([
+                                'name' => 'ahmed',
+                                'password' => '456'
+                        ]);
+                }
+and then , we need to push these data in the database, well we have this command: php artisan db:seed --class=seeder_name 
+
+now suppose that we have a lot of seeders, and we need to call it, so we can do that by the following command for all the seeders,
+but we can do that in one command which is:php artisan db:seed , we just write that, and after it all the mentioned seeders in databaseSeeder file will be called.
+
+we will add what we want from the seeders to the databaseSeeder file like that:
+                $this->call([
+                   firstSeeder::class,     
+                   secondSeeder::class,     
+                  thirdSeeder::class
+                ]);
+
+note:if we have a relationship between two tables, then we have to write firstly the first table seeder then the second table seeder,
+
+for example:
+        user table has:id and name and password
+        posts table has:content and user_id 
+we here write UserSeeder first,  then the PostSeeder , so that when the PostSeeder called it contain user_id column, which is exist because we called it calling UserSeeder firstly,
+but of we do the opposite, this will not work because user_id will not be exist to recognize it.
+..........................................................................................................................................
+Tinker:
+
+we can add the data to the database using the commands int the terminal.
+
+we have to ways to do that:
+
+the first way:
+
+ModelName::create(['column1' => 'value1' , 'column2' => 'value2' , ......]);
+
+the second way:
+
+$var = new ModelName();
+$var->column1 = 'value1'
+$var->column2 = 'value2'
+$var->column3 = 'value3'
+$var->save();
+...........................................................................................................................................
+Factory:
+
+firstly, the factory is related in some way with the seeders, because we will use some seeders commands to achieve the factory,
+
+we know that when we write the command:php artisan db:seed, then the run method will be excuted, well we will use that to run our factory.
+
+first of all, the table that we want to push the fake data inside it should have a model.
+
+next, we will creata a factory for this table, by the command: php artisan make:factory TableNameFactory 
+
+then, inside this factory we will have a definition method, well inside it we will put what we want from the fake data,like that:
+
+        public function definition(): array
+        {
+                return [
+                        'name' => fake()->name(),
+                        //'email' => fake()->unique()->safeEmail(),
+                        //'email_verified_at' => now(),
+                        'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+                        //'remember_token' => Str::random(10),
+                ];
+        }
+
+so next when we call this factory in the databaseSeeder by the command(php artisan db:seed) , this factory will puch the data to the table.
+
+now in the databaseSeeder we will have a statement to call the factory: \App\Models\Model_name::factory(the number of the records)->create();
+
+note that we don't have to create a special factory by the previous command if we want, so instead of that we can put the identifier implementation in the databaseSeeder in the run method,
+ under the statement of calling the factory, like that:
+        class DatabaseSeeder extends Seeder
+        {
+                public function run(): void
+                {
+                        \App\Models\User::factory(10)->create(); // the statement of factory calling
+                        
+                        \App\Models\User::factory()->create([
+                                'name' => 'Test User',
+                                'email' => 'test@example.com',
+                        ]);
+                }
+        }
+...........................................................................................................................
+Events and Listeners:
+
+suppose that we have an specific action that we need to do after something else, so that is what we called the event.
+
+we use it when we have a something to happen according to another thing that has been happened.
+
+for example:
+we need to send an email to the user when he register, so when he complete the register we send his data to an event.
+after that, the event will send the data to the listener and the listener will send the email depending on the data of the user.
+
+we can directly send the email from the event, but this may cause some errors.
+
+so the best practice is to send the email(do the action) by the listener.
+
+we have a built_in events in laravel, and we will use it in our projects.
+
+note that the events and listeners deal with all the types of models, not only one model like the user model for example.
+..............................................................................................................................
+built_in events in laravel:
+
+we have said before that events in laravel is to do something depending on other thing has been done.
+
+well , events mainly deal with models, in other words: when something happen to the table, his model will know that, so we will use this model to do our events,
+
+example: we have a user model, and when he register we need to send an email to the user.
+well, here the event is sending the email,depending on the registeration, or:adding new row to the table, so now the User model will know that. and do the event.
+
+for coding:
+        we can use the built_in event: created, to do an event when we create(add) new row to the table. 
+        so in app\Providers\AppServiceProvider.php, in the boot method, we will write our events on some models,
+        so back to our example, the implementation will be :
+        public function boot()
+        {
+                User::created(function($user){
+                        Mail::to($user)->send(new TestMail($user));
+                });
+
+                //or:
+
+                Model_name::the_built_in_event(function(){
+                        the event we want to happen.
+                });
+
+        }
+note that we can do anything we want in the event, not just sending the email, we can do anything.
+
+in the next lesson we will create the event by ourself and use the listener inside it,to know how the built_in events has been created.
+...........................................................................................................................................
+Create custom events and listeners:
+
+as we said before,the event will recieve the inputs and send it to the listener, and then the listener will do the action.
+well to create our own event and listener, we have two ways:
+
+the first way:
+
+create the event by the command: php artisan make:event event_name
+crete the listener and combine it with it's event by the command: php artisan make:listener listener_name -- event=event_name
+
+and then we will have folders for events and listeners in app folder.
+
+the second way:
+
+going to app/providres/EventServiceProviders.php , and inside it we will find $listen array,well inside this array we will write:
+                        
+                                        event_name::class=>[
+                                                listener_name::class,
+                                                ],
+and above we will use:app/Events/event_name , and app/Listeners/listener_name. 
+
+and then by the command: php artisan event:generate , the event and listener will be created in there folders.
+
+well then after we have create our events and listeners, we need to implement them.
+
+from the controller: we will call the event and send the data to it(as a constructor parameter).
+the event:will recieve the data from the constructor.
+the listener:will do the action depending or using the data which is sended from the event.
+
+we will call the event from the controller by the formula:
+        evnet(new event_name($data));
+well these data will go to the event and the event will recieve it by the constructor.
+then we will send these data to the listener , to the handle() method as a parameter, passing an instance from the event to this method like that:
+
+public function handle(event_name $var)
+{
+        do whatever we want with these data..... 
+}
+..........................................................................................................................................
+Traits And Helpers:
+
+we use traits to provide some shared functions between classes by putting them in a trait(so here we do not need to create a base class and use inheritance).so it is for prevent code duplicatin and make it dry.
+
+for example:we have a set of scopes functions(which deal with the database by ORM), and as we know when we need to use them we will put them in the model and then use them, so we can instead of that:
+        putting them in one trait and use this trait in the class that we need to use the scopes inside it.
+
+
+
+we use helpers to provide some shared functions globally in all the project (not only in the classes, it may be in the blade templates or anywhere else in the project).so helpers is for utility functions
+
+for example:in different ways of the project(in the auth controller and in some blade pages), we need to use the name of the user by this line of code:auth()->user()->name;
+so we can put all of that in a function called UserNmae() and include it in the helpers file, and call it whenever we want, this will make the code cleaner and readable.
+
+
+dealing with traits:
+first in the app folder we create another folder called traits, then inside it we will add our traits files.
+then inside every trait file, we will add the following code:
+<?php
+
+namespace App\Traits;
+
+trait TraitName
+{
+    our functions
+}
+and to use this trait inside some class , we need to add at the beginning of the class:
+use TraitName
+
+and to use a function from this trait we write:this->functionname();
+
+
+dealing with helpers:
+firstly in the app folder we will create a helpers.php file.
+then we need to include it in the autoloader
+so we will add in the composer.json file, in the autoload list:
+"files": 
+                [
+                "app/helpers.php"
+        ],
+
+so it will be like that:
+
+"autoload": {
+
+        "files": 
+        [
+        "app/helpers.php"
+        ],
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+
+then in the terminal we write:
+composer dump-autoload
+
+then inside the helpers.php file we will add our functions:
+
+<?php
+
+if(!function_exist('function_name'))
+{
+        function function_name(parameters)
+        {
+                implementation...
+        }
+}
+
+note that we can add the functoins directly without putting them in the if statement , but by putting them we will avoid the overlapping of the functions(in case we have another function with the same name).
+........................................................................................................................................................
+Queue in Laravel:
+
+suppose that we have 2000 user and we want to email them, well in the normal case, the server will stop to do complete this task and can not do any other thing until we finish this task.
+
+but in the case of the queue and jobs, we will send the task to the queue, which has the jobs, and then the job will do the task while we continue our other tasks at the same time.
+
+so here we will not make the server do one thing and stop the other tasks until we end, instead of that:the job will end the current task and we will continue our other tasks.
+(for example:the emeails will be sent in the background while we at the same time, search about something or add a user or or or .....)
+
+.............................................................................................................................
+Queue and Jobs in code:
+
+first:queue and jobs configratoins:
+
+1-in the termainal: php artisan queue:table
+this will create a table called jobs and this table is for tracking the current job, there is another table in the migration called jobs_failed, which is for tracking the failed jobs.
+
+2-php artisan migrate 
+
+3-in .env file: QUEUE_CONNECTION = database 
+
+4-php artisan make:job jobNameJob, after that we will have a job floder in the app folder and inside it we will find the job files.
+and inside the job file we will have two things:
+        constructor:to pass the data to this file 
+        handle function:inside it we will put the implementation we need(it is the task that takes a lot of time and stop the server to end).
+5-in the terminal: php artisan queue:work , this will allows us to track the proccessing of the task in the terminal.
+6-inside the controller, we will call the job that we want it to happen:
+        JobFileName::dispatch();
+and after that the task will excuted in the background and we can during that continue our other tasks(go to the dashboard, create an order , ......)
+
+note1:we can pass the data to the job file by the constructor like that:        JobFileName::dispatch($data);
+note2:we can make a delay in the excuting of the task, so the task won't be excuted before the mentioned time run out. it is doen by:  JobFileName::dispatch($data)->delay(now()->second(seconds));
+....................................................................................................................................
+Laravel Testing:
+
+
+Why Test Your Code Automatically:
+
+
+actually when we want to test our project, we do that manually, but it will be hard and take a lot of time.
+
+so automated test will save the time and test our project easily,
+
+some people may say that:writing tests will need a lot of time, but actually in the long term run, this will save the time and we will not go to test the same thing from the begining.
+
+we will be able to test the codes and catch the bugs faster than the manual test.and we can automate our tests.
+
+automated test will ensure the quality of the olds features in the current time. and will make our project with the less number of bugs.
+
+it is so easy to apply that in laravel and we will see that soon.
+
+.....................................................
+Default tests:
+
+there is a folder called tests in the project, also there are two kinds of tests:
+unit test:to test some function or a small part of the code.
+feature test: to test a feature or the relation between the objects and interacting.
+
+most of our tests should be Feature tests.
+
+any test of  a feature or a method will done in a function, either in the unit folder or in the feature folder.
+
+the method(test) template:
+
+public function test_the_name_of_the_test_which_appear_in_the_terminal_while_testing(): void
+{
+        apply the test here.
+}
+
+the test will passed or fail, this will appear in the terminal.
+
+to run the methods(tests):php artisan test, this will launch the files of the test folder.
+
+the number of the fails(probaply 0) + the number of the passed = the number of tests files.
+
+most of the tests are about launching a page or calling some api and wait the response.
+
+so we will test the feature in one method, and inside this method we will test it's parts one after another.
+
+smoke test:go through all the pages and test their responses or the result.
+
+the other parts of automated tests:
+explorering different assertions and how to use them to figure out some bugs in some functions or features or pages.
+..............................................................
+assertSee() and assertDontSee():
+
+simply they are about check if the text is included in the web page or not.
+
+we can not use the main database to store the testing data, so instead of that we will use the memory to store them.
+
+to do that, firstly we will find two lines commented in the phpunit.xml file, just uncommented them.
+
+then every query we do in the test function , will put the data in the memory(separate database).
+
+we will use in the class of the testing the refreshdatabase:use RefreshDatabase; ,this will refresh the memory every time we launch the test.
+
+but if we did not uncommented those two lines, the use RefreshDatabase will apply on the main database and will delete all of it's data, so we wshold not use this use RefreshDatabase unlees if we are dealing with the memory(uncommented those two lines).
+
+..............................................................
+theory of testing:AAA
+
+we will divide the implementation of the testing function into three parts:
+
+Arrange: add the data we need or do the configration, preaper the scenario.
+we may have zero or multiple arranges.
+
+Act:calling some api , some url or some function, do the exact same thing or action.
+we usually have one act
+
+Assert:put the asserts, like assetstatus,assertsee,assertdontsee , but we should not push a lot of assertions in the same function, it may will overlap the asserts and the results.
+we may have multiple assertions, but not alot of them.
+...................................................................
+we know that the assertSee will check if the TEXT exist in the page, but if we need to check if the data exist(not just some word in the page) , then it is better to 
+use asserHasView, which will check if the data exist.
+to use it:
+asserHasView('the name of the data variable in the controller , which compacted to the blade page' , functoin($collection) use ($current data variable)
+                                                                                                                        {
+                                                                                                                                return $collection->contains('$current data variable')
+                                                                                                                        })
+
+ex:
+public function test_new_exist(): void
+    {
+        $cat = Category::create([
+            'Category' => 'new'
+        ]);
+
+        $response = $this->get('/list');
+        
+        $response->assertStatus(200);
+        $response->assertViewHas('data' , function($collection) use ($cat) {
+            return $collection->contains($cat);
+        });
+    }
+note: data is the name of the information which compacted to the blade page.
+
+so we should be better with assertSee, we should assert the data to avoid the false passeds.
+
+.......................................................................
+unit test: it is for testing something small in our project, not all the feature, so to test some mehtod and what it will return for example.
+
+to create a unit test:php artisan make:test testnameTest --unit
+
+then inside it we will test our unit. and the cases will depend on us(we need to know how to write the cases and include all the possible things).
+
+assertEqual(expected value , founded value): will see if the parameters passed.
+in the founded value, we can call some method or service(like the converter money example) to see what it will return , and match it with the expected value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

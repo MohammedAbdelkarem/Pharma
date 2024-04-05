@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Traits;
 
 trait ResponseTrait
 {
-    public function SendResponse($data = null , $status = null , $message = null)
+    public function SendResponse($status = null , $message = null , $data = null)
     {
         $array = [
-            'data' => $data,
             'status' => $status,
-            'message' => $message
+            'message' => $message,
+            'data' => $data
         ];
         return response($array);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AdminRegisterRequest extends FormRequest
@@ -22,9 +23,18 @@ class AdminRegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => 'required|unique:admins,username',
-            'mobile' => 'required|phone:AUTO|unique:admins,mobile',
-            'password' => 'required|min:8|regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'
+            'username' => ['required' , 'unique:admins,username'],
+            'mobile' => ['required'  , 'unique:admins,mobile'],
+            'password' => [
+                'required' ,  
+                Password::min(8)
+                ->letters()
+                ->numbers()
+            ],
+            'photo' => ['image' , 'mimes:png,jpg,jpeg,bmp,svg,gif'],
+            'bio' => ['string' , 'max:200'],
+            'longitude' => ['numeric', 'between:-180,180'],
+            'latitude' => ['numeric', 'between:-90,90'],
         ];
     }
 }

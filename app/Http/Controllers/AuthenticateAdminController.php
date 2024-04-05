@@ -2,39 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AdminEmailRequest;
 use App\Models\Admin;
+use App\Event\SendEmail;
+use Illuminate\Validation\Concerns\ValidatesAttributes;
 use Laravel\Passport\Token;
 use Illuminate\Http\Request;
-use Illuminate\Http\ResponseTrait;
+use App\Traits\ResponseTrait;
+use App\Services\AdminService;
+use App\Http\Requests\CodeRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use App\Http\Requests\AdminEmailRequest;
+use App\Http\Requests\AdminRegisterRequest;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticateAdminController extends Controller
 {
-    use ResponseTrait;
+    use ResponseTrait , ValidatesRequests;
 
-    public function Email(AdminEmailRequest $request)
-    
+    private AdminService $adminService;
+ 
+    public function __construct(AdminService $adminService)
     {
+        $this->adminService = $adminService;
     }
-    public function Register(Request $request)
+
+    public function sendCode(AdminEmailRequest $request)
     {
-        $request->validate([
-            'username' => ['required'],
-            'email' => ['email' , 'required' , 'unique:admins'],
-            'mobile' => ['required'],
-            'password' => [ 'required'],
-        ]); // request 
+        $email = $request->validated();
+        Admin::create($email);
 
-        $data = $request->all();
-        $data['password'] = bcrypt($data['password']); // helper
+        $code = RandomCode();
 
-        $user_data = Admin::query()->create($data);//services
-        $token = $user_data->createToken('MyApp' , ['admin'])->accessToken;//helper for user and for admin
-        $user_data['token'] = $token;
+        event(new SendEmail($email , $code));
 
-        return $this->SendResponse($user_data , response::HTTP_CREATED);
+        Cache::forever('email', $email);
+        Cache::put('code', $code , 60);
+
+        return $this->SendResponse(response::HTTP_CREATED);
+    }
+
+    public function checkCode(CodeRequest $request)
+    {
+        $user = $request->validated();
+        $default = Cache::get('code');
+
+        if(!$default)
+        {
+            return $this->SendResponse(response::HTTP_GONE , 'expired code');
+        }
+        if($user === $default)
+        {
+            return $this->SendResponse(response::HTTP_OK , 'correct code');
+        }
+        return $this->SendResponse(response::HTTP_UNPROCESSABLE_ENTITY , 'invalid code');
+    }
+
+
+    public function register(AdminRegisterRequest $request)
+    {
+        $user = $request->validated();
+        //stopping here
+        //fix the bcrypt issue
+        //fix the validation issue 
+
+        $d['mobile'] = $user['mobile'];
+        $d['username'] = $user['username']; 
+        $d['password'] = ($user['password']);
+        hashing($d);
+        if($request->hasFile('photo'))
+        {
+            $d['photo'] = $this->adminService->photoPath($user);
+        }
+        if($request['longitude'] && $request['latitude'])
+        {
+            $d['location'] = $this->adminService->locationPath($user);
+        }
+        $d['bio'] = $user['bio'];
+
+         $data = Admin::query()->where('email' , Cache::get('email'))->update($d);//services
+        // $token = $user_data->createToken('MyApp' , ['admin'])->accessToken;//helper for user and for admin
+        // $user_data['token'] = $token;
+
+         return $this->SendResponse(response::HTTP_CREATED , null , $d);
     }
 
     public function Login(Request $request)

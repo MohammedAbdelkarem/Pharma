@@ -9,10 +9,18 @@
 //     }
 // }
 
-if(!function_exists('hashingPassword'))
+if(!function_exists('hashing'))
 {
-    function hashingPassword($data)
+    function hashing($data):void
     {
-        $data['password'] = bcrypt($data['password']);
+        $data['password'] = 444;
+    }
+}
+
+if(!function_exists('RandomCode'))
+{
+    function RandomCode()
+    {
+        return mt_rand(100000 , 999999);
     }
 }
