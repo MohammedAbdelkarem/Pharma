@@ -8,6 +8,5 @@ use Illuminate\Http\ResponseTrait;
 class AuthenticateGeneralController extends Controller
 {
     use ResponseTrait;
-    public function Email()
     
 }
