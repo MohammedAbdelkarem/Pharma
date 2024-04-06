@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -35,6 +36,9 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'created_at',
+        'updated_at',
+        'email_verified_at'
     ];
 
     /**
@@ -46,4 +50,15 @@ class Admin extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function scopeEmail($query)
+    {
+        $email = Cache::get('email');
+        return $query->where('email' , $email);
+    }
+
+    // public function scopePretty()
+    // {
+    //     return $this->select('*')->get();
+    // }
 }

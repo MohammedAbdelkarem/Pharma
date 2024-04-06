@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Event\SendEmail;
-use Illuminate\Validation\Concerns\ValidatesAttributes;
 use Laravel\Passport\Token;
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
@@ -62,30 +61,19 @@ class AuthenticateAdminController extends Controller
 
     public function register(AdminRegisterRequest $request)
     {
-        $user = $request->validated();
-        //stopping here
-        //fix the bcrypt issue
-        //fix the validation issue 
+        $user = $request->validated();//stopping here , what to put inside the token
+        $d = $this->adminService->handleRegistrationData($user , $request);
 
-        $d['mobile'] = $user['mobile'];
-        $d['username'] = $user['username']; 
-        $d['password'] = ($user['password']);
-        hashing($d);
-        if($request->hasFile('photo'))
-        {
-            $d['photo'] = $this->adminService->photoPath($user);
-        }
-        if($request['longitude'] && $request['latitude'])
-        {
-            $d['location'] = $this->adminService->locationPath($user);
-        }
-        $d['bio'] = $user['bio'];
+        Admin::email()->update($d);
 
-         $data = Admin::query()->where('email' , Cache::get('email'))->update($d);//services
-        // $token = $user_data->createToken('MyApp' , ['admin'])->accessToken;//helper for user and for admin
+        $data = Admin::email()->first();
+
+        $token = adminToken($data);//helper for user and for admin
+        $data['token'] = $token;
         // $user_data['token'] = $token;
+        //dd($data);
 
-         return $this->SendResponse(response::HTTP_CREATED , null , $d);
+         return $this->SendResponse(response::HTTP_CREATED , null , $data);
     }
 
     public function Login(Request $request)
