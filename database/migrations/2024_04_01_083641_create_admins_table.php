@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('mobile')->unique()->nullable();
             $table->string('password')->nullable();
-            $table->integer('code')->nullable();
             $table->string('photo')->nullable();
             $table->string('bio')->nullable();
             $table->string('location')->nullable();

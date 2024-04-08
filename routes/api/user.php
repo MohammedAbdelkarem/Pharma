@@ -17,8 +17,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('user/register' , [AuthenticateUserController::class , 'userRegister']);
-Route::post('user/login' , [AuthenticateUserController::class , 'userLogin']);
+Route::post('user/send' , [AuthenticateUserController::class , 'sendCode']);
+Route::post('user/register' , [AuthenticateUserController::class , 'register']);
+Route::post('user/login' , [AuthenticateUserController::class , 'login']);
 Route::group(['prefix' => 'user' , 'middleware' => ['auth:user_api' , 'scopes:user']] , function(){
-    Route::post('logout' , [AuthenticateUserController::class , 'userLogout']);
+    Route::post('logout' , [AuthenticateUserController::class , 'logout']);
 });

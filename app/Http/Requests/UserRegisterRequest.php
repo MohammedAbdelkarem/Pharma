@@ -24,7 +24,7 @@ class UserRegisterRequest extends FormRequest
     {
         return [
             'username' => ['required' , 'unique:users,username'],
-            'mobile' => ['required' , 'phone:AUTO' , 'unique:users,mobile'],
+            'mobile' => ['required' ,  'unique:users,mobile' , 'phone:AUTO'],
             'password' => [
                 'required' ,  
                 Password::min(8)

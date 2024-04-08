@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AdminLoginRequest;
 use App\Models\Admin;
 use App\Event\SendEmail;
 use Laravel\Passport\Token;
@@ -30,6 +31,7 @@ class AuthenticateAdminController extends Controller
     public function sendCode(AdminEmailRequest $request)
     {
         $email = $request->validated();
+
         Admin::create($email);
 
         $code = RandomCode();
@@ -37,70 +39,47 @@ class AuthenticateAdminController extends Controller
         event(new SendEmail($email , $code));
 
         Cache::forever('email', $email);
-        Cache::put('code', $code , 60);
+        Cache::put('code', $code , now()->addHour());
 
-        return $this->SendResponse(response::HTTP_CREATED);
+        return $this->SendResponse(response::HTTP_CREATED , 'email sended successfully');
     }
-
-    public function checkCode(CodeRequest $request)
-    {
-        $user = $request->validated();
-        $default = Cache::get('code');
-
-        if(!$default)
-        {
-            return $this->SendResponse(response::HTTP_GONE , 'expired code');
-        }
-        if($user === $default)
-        {
-            return $this->SendResponse(response::HTTP_OK , 'correct code');
-        }
-        return $this->SendResponse(response::HTTP_UNPROCESSABLE_ENTITY , 'invalid code');
-    }
-
-
     public function register(AdminRegisterRequest $request)
     {
-        $user = $request->validated();//stopping here , what to put inside the token
-        $d = $this->adminService->handleRegistrationData($user , $request);
+        $validatedData = $request->validated();
 
-        Admin::email()->update($d);
+        $registrationData = $this->adminService->handleRegistrationData($validatedData , $request);
 
-        $data = Admin::email()->first();
+        Admin::currentEmail()->update($registrationData);
 
-        $token = adminToken($data);//helper for user and for admin
-        $data['token'] = $token;
-        // $user_data['token'] = $token;
-        //dd($data);
-
-         return $this->SendResponse(response::HTTP_CREATED , null , $data);
+        $admin = Admin::currentEmail()->first('id');
+        $token = adminToken($admin);
+        
+        return $this->SendResponse(response::HTTP_CREATED , 'successful registeration' , ['token' => $token]);
     }
 
-    public function Login(Request $request)
+    public function login(AdminLoginRequest $request)
     {
-        $request->validate([
-            'email' => 'required|exists:admins,email|email',
-            'password' => 'required',
-        ]);
-        $credentials = $request->only(['email' , 'password']);
-
         if(auth()->guard('admin')->attempt($request->only('email' , 'password')))
         {
-            config(['auth.guards.admin_api.provider' => 'admin']);
-            $user_data = Admin::query()->where('email' , $request->email)->first();
+            $validatedData = $request->validated();
 
-            $token = $user_data->createToken('MyApp' , ['admin'])->accessToken;
-            $user_data['token'] = $token;
-            return $this->SendResponse($user_data , response::HTTP_OK);
+            Cache::forever('email' , $validatedData['email']);
+
+            config(['auth.guards.admin_api.provider' => 'admin']);
+
+            $admin = Admin::currentEmail()->first('id');
+
+            $token = adminToken($admin);
+            
+            return $this->SendResponse(response::HTTP_OK , 'logged in successfully' , ['token' => $token]);
         }
-        // dd(auth()->guard('user'));
-        return $this->SendResponse(null,response::HTTP_UNAUTHORIZED , 'unauth');
+        return $this->SendResponse(response::HTTP_UNAUTHORIZED , 'invalid password');
     }
 
-    public function Logout()
+    public function logout()
     {
-        $userId = Auth::guard('admin_api')->user()->id;
-        Token::where('user_id', $userId)->delete();
-        return $this->SendResponse(null , response::HTTP_OK , 'loggedout successfully');
+        Token::adminId()->delete();
+
+         return $this->SendResponse(response::HTTP_OK , 'logged out successfully');
     }
 }

@@ -24,7 +24,7 @@ class AdminRegisterRequest extends FormRequest
     {
         return [
             'username' => ['required' , 'unique:admins,username'],
-            'mobile' => ['required'  , 'unique:admins,mobile'],
+            'mobile' => ['required'  , 'unique:admins,mobile' , 'phone:AUTO'],
             'password' => [
                 'required' ,  
                 Password::min(8)

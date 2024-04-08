@@ -22,7 +22,6 @@ class Admin extends Authenticatable
         'email',
         'mobile',
         'password',
-        'code',
         'photo',
         'bio',
         'location',
@@ -51,7 +50,7 @@ class Admin extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function scopeEmail($query)
+    public function scopeCurrentEmail($query)
     {
         $email = Cache::get('email');
         return $query->where('email' , $email);

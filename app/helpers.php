@@ -33,3 +33,34 @@ if(!function_exists('adminToken'))
         return $var;
     }
 }
+
+if(!function_exists('userToken'))
+{
+    function userToken($data)
+    {
+        $var = $data->createToken('MyApp' , ['user'])->accessToken;
+        return $var;
+    }
+}
+
+if(!function_exists('photoPath'))
+{
+    function photoPath($request)
+    {
+        $image = $request['photo'];
+        $path = time().'.'.$image->getClientOriginalExtension();
+        $image->move(public_path('image') , $path);
+        $path = 'image/'.$path;
+
+        return $path;
+    }
+}
+
+if(!function_exists('locationPath'))
+{
+    function locationPath($request)
+    {
+        $path = 'https://www.google.com/maps?q='.$request['latitude'].','.$request['longitude'];
+        return $path;
+    }
+}

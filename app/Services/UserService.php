@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
  
-class AdminService
+class UserService
 {
     public function handleRegistrationData(array $user, $request)
     {
@@ -10,18 +10,13 @@ class AdminService
             'mobile' => $user['mobile'],
             'username' => $user['username'],
             'password' => $user['password'],
-            'bio' => $user['bio'],
         ];
-
-        if ($request->hasFile('photo'))
-        {
-            $data['photo'] = photoPath($user);
-        }
 
         if ($request->filled(['longitude', 'latitude']))
         {
             $data['location'] = locationPath($user);
         }
+
         hashing($data);
 
         return $data;
