@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Auth\User;
 
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserRegisterRequest extends FormRequest
+class UserEditRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -23,10 +23,9 @@ class UserRegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required' , 'unique:users,username'],
-            'mobile' => ['required' ,  'unique:users,mobile' , 'phone:AUTO'],
+            'username' => ['unique:users,username'],
+            'mobile' => ['unique:users,mobile' , 'phone:AUTO'],
             'password' => [
-                'required' ,  
                 Password::min(8)
                 ->letters()
                 ->numbers()

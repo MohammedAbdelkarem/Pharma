@@ -1,38 +1,40 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
-use App\Http\Requests\AdminLoginRequest;
-use App\Models\Admin;
+use App\Models\User;
 use App\Event\SendEmail;
 use Laravel\Passport\Token;
-use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use App\Services\AdminService;
+use App\Services\AuthDataService;
 use App\Http\Requests\CodeRequest;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use App\Http\Requests\AdminEmailRequest;
-use App\Http\Requests\AdminRegisterRequest;
-use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Services\AuthInformationService;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\Auth\User\UserEmailRequest;
+use App\Http\Requests\Auth\User\UserLoginRequest;
+use App\Http\Requests\Auth\User\UserRegisterRequest;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 
-class AuthenticateAdminController extends Controller
+class AuthenticateUserController extends Controller
 {
     use ResponseTrait , ValidatesRequests;
+    
 
-    private AdminService $adminService;
- 
-    public function __construct(AdminService $adminService)
+    private AuthDataService $authDataService;
+
+    public function __construct(AuthDataService $authDataService)
     {
-        $this->adminService = $adminService;
+        $this->authDataService = $authDataService;
     }
-
-    public function sendCode(AdminEmailRequest $request)
+    public function sendCode(UserEmailRequest $request)
     {
         $email = $request->validated();
 
-        Admin::create($email);
+        User::create($email);
 
         $code = RandomCode();
 
@@ -43,33 +45,33 @@ class AuthenticateAdminController extends Controller
 
         return $this->SendResponse(response::HTTP_CREATED , 'email sended successfully');
     }
-    public function register(AdminRegisterRequest $request)
+    public function register(UserRegisterRequest $request)
     {
         $validatedData = $request->validated();
 
-        $registrationData = $this->adminService->handleRegistrationData($validatedData , $request);
+        $registrationData = $this->authDataService->handleData($validatedData);
 
-        Admin::currentEmail()->update($registrationData);
+        User::currentEmail()->update($registrationData);
 
-        $admin = Admin::currentEmail()->first('id');
-        $token = adminToken($admin);
+        $admin = User::currentEmail()->first('id');
+        $token = userToken($admin);
         
         return $this->SendResponse(response::HTTP_CREATED , 'successful registeration' , ['token' => $token]);
     }
 
-    public function login(AdminLoginRequest $request)
+    public function login(UserLoginRequest $request)
     {
-        if(auth()->guard('admin')->attempt($request->only('email' , 'password')))
+        if(auth()->guard('user')->attempt($request->only('email' , 'password')))
         {
             $validatedData = $request->validated();
 
             Cache::forever('email' , $validatedData['email']);
+            
+            config(['auth.guards.user_api.provider' => 'user']);
 
-            config(['auth.guards.admin_api.provider' => 'admin']);
+            $admin = User::currentEmail()->first('id');
 
-            $admin = Admin::currentEmail()->first('id');
-
-            $token = adminToken($admin);
+            $token = userToken($admin);
             
             return $this->SendResponse(response::HTTP_OK , 'logged in successfully' , ['token' => $token]);
         }
@@ -78,7 +80,7 @@ class AuthenticateAdminController extends Controller
 
     public function logout()
     {
-        Token::adminId()->delete();
+        Token::userId()->delete();
 
          return $this->SendResponse(response::HTTP_OK , 'logged out successfully');
     }

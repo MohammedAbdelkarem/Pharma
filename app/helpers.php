@@ -45,9 +45,8 @@ if(!function_exists('userToken'))
 
 if(!function_exists('photoPath'))
 {
-    function photoPath($request)
+    function photoPath($image)
     {
-        $image = $request['photo'];
         $path = time().'.'.$image->getClientOriginalExtension();
         $image->move(public_path('image') , $path);
         $path = 'image/'.$path;
@@ -58,9 +57,9 @@ if(!function_exists('photoPath'))
 
 if(!function_exists('locationPath'))
 {
-    function locationPath($request)
+    function locationPath($data)
     {
-        $path = 'https://www.google.com/maps?q='.$request['latitude'].','.$request['longitude'];
+        $path = 'https://www.google.com/maps?q='.$data['latitude'].','.$data['longitude'];
         return $path;
     }
 }

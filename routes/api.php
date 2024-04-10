@@ -1,9 +1,7 @@
 <?php
 
-use App\Http\Controllers\AuthenticateGeneralController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthenticateUserController;
+use App\Http\Controllers\Auth\AuthenticateGeneralController;
 
 /*
 |--------------------------------------------------------------------------

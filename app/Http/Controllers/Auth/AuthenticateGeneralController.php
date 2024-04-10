@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
-use Illuminate\Http\Request;
-use App\Http\Requests\CodeRequest;
 use App\Traits\ResponseTrait;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Requests\Auth\CodeRequest;
 use Symfony\Component\HttpFoundation\Response;
+
 class AuthenticateGeneralController extends Controller
 {
     use ResponseTrait;
@@ -17,7 +18,7 @@ class AuthenticateGeneralController extends Controller
 
         $defaultCode = Cache::get('code');
 
-        if(!$defaultCode)//fix this about the cache and the expiered code(when the code expiered it will be null in the cache or it will removed at all from the cache?)
+        if(!$defaultCode)
         {
             return $this->SendResponse(response::HTTP_GONE , 'expired code');
         }
@@ -25,7 +26,7 @@ class AuthenticateGeneralController extends Controller
         {
             return $this->SendResponse(response::HTTP_OK , 'correct code');
         }
-        dd($validatedCode);
+        // dd($validatedCode);
         return $this->SendResponse(response::HTTP_UNPROCESSABLE_ENTITY , 'invalid code');
     }
 }

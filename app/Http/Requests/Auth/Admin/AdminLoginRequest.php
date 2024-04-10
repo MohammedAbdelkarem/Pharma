@@ -1,10 +1,14 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Auth\Admin;
 
+use App\Models\Admin;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Foundation\Http\FormRequest;
 
-class AdminEmailRequest extends FormRequest
+class AdminLoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +26,8 @@ class AdminEmailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required' , 'email' , 'unique:admins,email']
+            'email' => ['required' , 'email' , 'exists:admins,email'],
+            'password' => ['required','confirmed']
         ];
     }
 }
