@@ -24,7 +24,10 @@ class AuthDataService
         {
             $data['location'] = locationPath($user);
         }
-        hashing($data);
+        if(isset($user['password']))
+        {
+            hashing($data);
+        }
 
         return $data;
     }

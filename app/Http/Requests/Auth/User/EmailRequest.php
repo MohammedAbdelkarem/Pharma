@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Auth\Admin;
+namespace App\Http\Requests\Auth\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AdminEmailRequest extends FormRequest
+class EmailRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,7 +22,7 @@ class AdminEmailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required' , 'email' , 'unique:admins,email']
+            'email' => ['required' , 'email' , 'unique:users,email']
         ];
     }
 }

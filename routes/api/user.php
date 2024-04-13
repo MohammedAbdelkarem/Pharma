@@ -20,4 +20,5 @@ Route::post('user/register' , [AuthenticateUserController::class , 'register']);
 Route::post('user/login' , [AuthenticateUserController::class , 'login']);
 Route::group(['prefix' => 'user' , 'middleware' => ['auth:user_api' , 'scopes:user']] , function(){
     Route::post('logout' , [AuthenticateUserController::class , 'logout']);
+    Route::post('edit' , [AuthenticateUserController::class , 'editInformation']);
 });

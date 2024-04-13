@@ -13,7 +13,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use App\Services\AuthInformationService;
+use App\Http\Requests\Auth\User\EditRequest;
+use App\Http\Requests\Auth\User\EmailRequest;
+use App\Http\Requests\Auth\User\LoginRequest;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\Auth\User\RegisterRequest;
+use App\Http\Requests\Auth\User\UserEditRequest;
 use App\Http\Requests\Auth\User\UserEmailRequest;
 use App\Http\Requests\Auth\User\UserLoginRequest;
 use App\Http\Requests\Auth\User\UserRegisterRequest;
@@ -30,7 +35,7 @@ class AuthenticateUserController extends Controller
     {
         $this->authDataService = $authDataService;
     }
-    public function sendCode(UserEmailRequest $request)
+    public function sendCode(EmailRequest $request)
     {
         $email = $request->validated();
 
@@ -45,7 +50,7 @@ class AuthenticateUserController extends Controller
 
         return $this->SendResponse(response::HTTP_CREATED , 'email sended successfully');
     }
-    public function register(UserRegisterRequest $request)
+    public function register(RegisterRequest $request)
     {
         $validatedData = $request->validated();
 
@@ -59,7 +64,7 @@ class AuthenticateUserController extends Controller
         return $this->SendResponse(response::HTTP_CREATED , 'successful registeration' , ['token' => $token]);
     }
 
-    public function login(UserLoginRequest $request)
+    public function login(LoginRequest $request)
     {
         if(auth()->guard('user')->attempt($request->only('email' , 'password')))
         {
@@ -83,5 +88,16 @@ class AuthenticateUserController extends Controller
         Token::userId()->delete();
 
          return $this->SendResponse(response::HTTP_OK , 'logged out successfully');
+    }
+
+    public function editInformation(EditRequest $request)
+    {
+        $validatedData = $request->validated();
+        
+        $updates = $this->authDataService->handleData($validatedData);
+
+        User::currentEmail()->update($updates);
+
+        return $this->SendResponse(response::HTTP_OK , 'data updated succussfully');
     }
 }

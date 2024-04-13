@@ -11,11 +11,15 @@ use App\Services\AdminService;
 use App\Services\AuthDataService;
 use App\Http\Requests\CodeRequest;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\Admin\AdminEditRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use App\Services\AuthInformationService;
+use App\Http\Requests\Auth\Admin\EditRequest;
+use App\Http\Requests\Auth\Admin\EmailRequest;
+use App\Http\Requests\Auth\Admin\LoginRequest;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\Auth\Admin\RegisterRequest;
+use App\Http\Requests\Auth\Admin\AdminEditRequest;
 use App\Http\Requests\Auth\Admin\AdminEmailRequest;
 use App\Http\Requests\Auth\Admin\AdminLoginRequest;
 use App\Http\Requests\Auth\Admin\AdminRegisterRequest;
@@ -32,7 +36,7 @@ class AuthenticateAdminController extends Controller
         $this->authDataService = $authDataService;
     }
 
-    public function sendCode(AdminEmailRequest $request)
+    public function sendCode(EmailRequest $request)
     {
         $email = $request->validated();
 
@@ -47,7 +51,7 @@ class AuthenticateAdminController extends Controller
 
         return $this->SendResponse(response::HTTP_CREATED , 'email sended successfully');
     }
-    public function register(AdminRegisterRequest $request)
+    public function register(RegisterRequest $request)
     {
         $validatedData = $request->validated();
 
@@ -61,7 +65,7 @@ class AuthenticateAdminController extends Controller
         return $this->SendResponse(response::HTTP_CREATED , 'successful registeration' , ['token' => $token]);
     }
 
-    public function login(AdminLoginRequest $request)
+    public function login(LoginRequest $request)
     {
         if(auth()->guard('admin')->attempt($request->only('email' , 'password')))
         {
@@ -87,13 +91,14 @@ class AuthenticateAdminController extends Controller
          return $this->SendResponse(response::HTTP_OK , 'logged out successfully');
     }
 
-    public function editInformation(AdminEditRequest $request)
+    public function editInformation(EditRequest $request)
     {
         $validatedData = $request->validated();
-        /*
-        stopping here
-        complete the updata function for admin and user , use the shared service.
-        change the names of the request files.
-        */
+        
+        $updates = $this->authDataService->handleData($validatedData);
+
+        Admin::currentEmail()->update($updates);
+
+        return $this->SendResponse(response::HTTP_OK , 'data updated succussfully');
     }
 }
