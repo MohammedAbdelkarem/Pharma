@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
  
-class AuthDataService
+class AuthService
 {
     public function handleData(array $user)
     {

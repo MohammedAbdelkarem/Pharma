@@ -5,35 +5,26 @@ namespace App\Http\Controllers\Auth;
 use App\Models\Admin;
 use App\Event\SendEmail;
 use Laravel\Passport\Token;
-use GuzzleHttp\Psr7\Request;
 use App\Traits\ResponseTrait;
-use App\Services\AdminService;
-use App\Services\AuthDataService;
-use App\Http\Requests\CodeRequest;
+use App\Services\AuthService;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use App\Services\AuthInformationService;
 use App\Http\Requests\Auth\Admin\EditRequest;
 use App\Http\Requests\Auth\Admin\EmailRequest;
 use App\Http\Requests\Auth\Admin\LoginRequest;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Auth\Admin\RegisterRequest;
-use App\Http\Requests\Auth\Admin\AdminEditRequest;
-use App\Http\Requests\Auth\Admin\AdminEmailRequest;
-use App\Http\Requests\Auth\Admin\AdminLoginRequest;
-use App\Http\Requests\Auth\Admin\AdminRegisterRequest;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class AuthenticateAdminController extends Controller
 {
     use ResponseTrait , ValidatesRequests;
 
-    private AuthDataService $authDataService;
+    private AuthService $authService;
  
-    public function __construct(AuthDataService $authDataService)
+    public function __construct(AuthService $authService)
     {
-        $this->authDataService = $authDataService;
+        $this->authService = $authService;
     }
 
     public function sendCode(EmailRequest $request)
@@ -55,7 +46,7 @@ class AuthenticateAdminController extends Controller
     {
         $validatedData = $request->validated();
 
-        $registrationData = $this->authDataService->handleData($validatedData);
+        $registrationData = $this->authService->handleData($validatedData);
 
         Admin::currentEmail()->update($registrationData);
 
@@ -95,7 +86,7 @@ class AuthenticateAdminController extends Controller
     {
         $validatedData = $request->validated();
         
-        $updates = $this->authDataService->handleData($validatedData);
+        $updates = $this->authService->handleData($validatedData);
 
         Admin::currentEmail()->update($updates);
 

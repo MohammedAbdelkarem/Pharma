@@ -26,7 +26,6 @@ class AuthenticateGeneralController extends Controller
         {
             return $this->SendResponse(response::HTTP_OK , 'correct code');
         }
-        // dd($validatedCode);
         return $this->SendResponse(response::HTTP_UNPROCESSABLE_ENTITY , 'invalid code');
     }
 }

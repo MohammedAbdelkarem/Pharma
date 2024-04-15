@@ -6,22 +6,14 @@ use App\Models\User;
 use App\Event\SendEmail;
 use Laravel\Passport\Token;
 use App\Traits\ResponseTrait;
-use App\Services\AdminService;
-use App\Services\AuthDataService;
-use App\Http\Requests\CodeRequest;
+use App\Services\AuthService;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use App\Services\AuthInformationService;
 use App\Http\Requests\Auth\User\EditRequest;
 use App\Http\Requests\Auth\User\EmailRequest;
 use App\Http\Requests\Auth\User\LoginRequest;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Auth\User\RegisterRequest;
-use App\Http\Requests\Auth\User\UserEditRequest;
-use App\Http\Requests\Auth\User\UserEmailRequest;
-use App\Http\Requests\Auth\User\UserLoginRequest;
-use App\Http\Requests\Auth\User\UserRegisterRequest;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class AuthenticateUserController extends Controller
@@ -29,11 +21,11 @@ class AuthenticateUserController extends Controller
     use ResponseTrait , ValidatesRequests;
     
 
-    private AuthDataService $authDataService;
+    private AuthService $authService;
 
-    public function __construct(AuthDataService $authDataService)
+    public function __construct(AuthService $authService)
     {
-        $this->authDataService = $authDataService;
+        $this->authService = $authService;
     }
     public function sendCode(EmailRequest $request)
     {
@@ -54,7 +46,7 @@ class AuthenticateUserController extends Controller
     {
         $validatedData = $request->validated();
 
-        $registrationData = $this->authDataService->handleData($validatedData);
+        $registrationData = $this->authService->handleData($validatedData);
 
         User::currentEmail()->update($registrationData);
 
@@ -94,7 +86,7 @@ class AuthenticateUserController extends Controller
     {
         $validatedData = $request->validated();
         
-        $updates = $this->authDataService->handleData($validatedData);
+        $updates = $this->authService->handleData($validatedData);
 
         User::currentEmail()->update($updates);
 

@@ -54,4 +54,15 @@ class User extends Authenticatable
         $email = Cache::get('email');
         return $query->where('email' , $email);
     }
+
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function favoriteMedicines()
+    {
+        return $this->belongsToMany(Medicine::class, 'favorite_medicine_user', 'user_id', 'medicine_id');
+    }
 }

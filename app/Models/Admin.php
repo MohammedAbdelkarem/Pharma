@@ -55,9 +55,15 @@ class Admin extends Authenticatable
         $email = Cache::get('email');
         return $query->where('email' , $email);
     }
+    
 
-    // public function scopePretty()
-    // {
-    //     return $this->select('*')->get();
-    // }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function medicines()
+    {
+        return $this->hasMany(Medicine::class);
+    }
 }
