@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminMedicineController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticateAdminController;
 
@@ -20,4 +21,5 @@ Route::post('admin/login' , [AuthenticateAdminController::class , 'login']);
 Route::group(['prefix' => 'admin' , 'middleware' => ['auth:admin_api' , 'scopes:admin']] , function(){
     Route::post('logout' , [AuthenticateAdminController::class , 'logout']);
     Route::post('edit' , [AuthenticateAdminController::class , 'editInformation']);
+    Route::post('add' , [AdminMedicineController::class , 'addMedicine']);
 });

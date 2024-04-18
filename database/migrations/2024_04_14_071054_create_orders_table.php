@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->integer('order_status');
-            $table->boolean('payment_status');
-            $table->boolean('active');
-            $table->integer('price');
+            $table->enum('order_status', ['pending', 'done'])->default('pending');
+            $table->enum('payment_status', ['paid', 'not_paid'])->default('not_paid');
+            $table->enum('active', ['active', 'inactive'])->default('active');
+            $table->integer('price')->default(0);
             $table->foreignId('user_id')->constrained('users')->CascadeOnDelete();
-            $table->foreignId('admin_id')->constrained('admins')->CascadeOnDelete();
+            $table->foreignId('admin_id')->nullable()->constrained('admins')->CascadeOnDelete();
             $table->timestamps();
         });
     }

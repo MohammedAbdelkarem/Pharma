@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('Ed');
             $table->integer('price');
             $table->string('photo')->nullable();
-            $table->integer('sales');
+            $table->integer('sales')->nullable();
             $table->foreignId('admin_id')->constrained('admins')->CascadeOnDelete();
             $table->foreignId('category_id')->constrained('categories')->CascadeOnDelete();
             $table->timestamps();

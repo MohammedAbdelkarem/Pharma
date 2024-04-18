@@ -22,6 +22,11 @@ class Medicine extends Model
         'category_id',
     ];
 
+    public function scopeAdminId($query , $id)
+    {
+        return $query->where('admin_id' , $id);
+    }
+
     public function admin()
     {
         return $this->belongsTo(Admin::class);
@@ -32,9 +37,10 @@ class Medicine extends Model
         return $this->belongsTo(Category::class);
     }
 
-
     public function users()
     {
         return $this->belongsToMany(User::class, 'favorite_medicine_user', 'medicine_id', 'user_id');
     }
+
+
 }

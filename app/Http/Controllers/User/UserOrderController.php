@@ -34,6 +34,7 @@ class UserOrderController extends Controller
         //close the order 
 
         //create another one(by the sevice)
+        //$this->orderService->createOrder($admin->id);
     }
 
     public function getOrders(Request $request)

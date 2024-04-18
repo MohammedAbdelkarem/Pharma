@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Order;
 use App\Services\AdminService;
+use App\Services\OrderService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,6 +16,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind('ahotoService', function () {
             return new AdminService();
+        });
+        $this->app->bind('ahotoService', function () {
+            return new OrderService();
         });
     }
 

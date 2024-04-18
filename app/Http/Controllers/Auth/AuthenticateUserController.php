@@ -14,7 +14,9 @@ use App\Http\Requests\Auth\User\EmailRequest;
 use App\Http\Requests\Auth\User\LoginRequest;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Auth\User\RegisterRequest;
+use App\Services\OrderService;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Ramsey\Uuid\Codec\OrderedTimeCodec;
 
 class AuthenticateUserController extends Controller
 {
@@ -22,10 +24,12 @@ class AuthenticateUserController extends Controller
     
 
     private AuthService $authService;
+    private OrderService $orderService;
 
-    public function __construct(AuthService $authService)
+    public function __construct(AuthService $authService , OrderService $orderService)
     {
         $this->authService = $authService;
+        $this->orderService = $orderService;
     }
     public function sendCode(EmailRequest $request)
     {
@@ -51,6 +55,7 @@ class AuthenticateUserController extends Controller
         User::currentEmail()->update($registrationData);
 
         $admin = User::currentEmail()->first('id');
+        $this->orderService->createOrder($admin->id);
         $token = userToken($admin);
         
         return $this->SendResponse(response::HTTP_CREATED , 'successful registeration' , ['token' => $token]);

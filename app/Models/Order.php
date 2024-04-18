@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\Active;
+use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {

@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Admin;
+use Illuminate\Support\Facades\Cache;
+
 
 // if(!function_exists('hashingPassword'))
 // {
@@ -61,5 +64,13 @@ if(!function_exists('locationPath'))
     {
         $path = 'https://www.google.com/maps?q='.$data['latitude'].','.$data['longitude'];
         return $path;
+    }
+}
+
+if(!function_exists('admin_id'))
+{
+    function admin_id()
+    {
+        return Admin::currentEmail()->pluck('id')->first();
     }
 }

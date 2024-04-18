@@ -2,23 +2,34 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Traits\ResponseTrait;
+use App\Models\Medicine;
 use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AddMedicineRequest;
+use App\Services\MedicineService;
+use Symfony\Component\HttpFoundation\Response;
 
 class AdminMedicineController extends Controller
 {
     use ResponseTrait;
 
-    public function addMedicine(Request $request)
+    private MedicineService $medicineService;
+ 
+    public function __construct(MedicineService $medicineService)
     {
-        //validate the informations of the medicine
+        $this->medicineService = $medicineService;
+    }
 
-        //get the admin id from the token
+    public function addMedicine(AddMedicineRequest $request)
+    {
+        $validatedData = $request->validated();
 
-        //store the data in the medicine table depending on the admin id
+        $handeledData = $this->medicineService->handleData($validatedData);
 
-        //return response
+        Medicine::create($handeledData);
+
+        return $this->SendResponse(response::HTTP_CREATED , 'medicine added successfully');
     }
 
     public function updateMedicine(Request $request)
