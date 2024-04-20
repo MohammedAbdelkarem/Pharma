@@ -3,14 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Admin;
+use App\Models\Order;
+use App\Models\Category;
 use App\Models\Medicine;
+use App\Models\SubOrder;
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use App\Services\MedicineService;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Admin\MedicineResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Admin\AddMedicineRequest;
 use App\Http\Requests\Admin\UpdateMedicineRequest;
+use App\Http\Requests\Admin\DeleteMedincineRequest;
 
 class AdminMedicineController extends Controller
 {
@@ -38,25 +43,48 @@ class AdminMedicineController extends Controller
     {
         $validatedData = $request->validated();
 
+        $validatedId = $request->validated()['id'];
+        
+        $ordersWithMedicine = $this->medicineService->checkMedicine($validatedId);
+
+        if($ordersWithMedicine)
+        {
+            return $this->SendResponse(response::HTTP_UNPROCESSABLE_ENTITY , 'this medicine is inculded in active orders, you can not update it');
+        }
+
         $handeledData = $this->medicineService->handleData($validatedData);
 
         $medicine_id = $validatedData['id'];
-        // dd($medicine_id);
 
         Medicine::currentMedicine($medicine_id)->update($handeledData);
-        // dd($handeledData);
 
         return $this->SendResponse(response::HTTP_CREATED , 'medicine updated successfully');
     }
 
-    public function deleteMedincine(Request $request)
+    public function deleteMedincine(DeleteMedincineRequest $request)
     {
-        //delete the medicine from the medicine table
+        $validatedId = $request->validated()['id'];
+        
+        $ordersWithMedicine = $this->medicineService->checkMedicine($validatedId);
+
+        if($ordersWithMedicine)
+        {
+            return $this->SendResponse(response::HTTP_UNPROCESSABLE_ENTITY , 'this medicine is inculded in active orders, you can not delete it');
+        }
+        
+        Medicine::currentMedicine($validatedId)->delete();
+
+        return $this->SendResponse(response::HTTP_OK , 'medicine deleted successfully');
     }
 
-    public function getEmptyQuantities(Request $request)
+    public function getEmptyQuantities()
     {
-        //return the medicines of zero quantity
+        $data = Medicine::emptyMedicine()->get();
+
+        $data = MedicineResource::collection($data);
+
+        return $this->sendResponse(response::HTTP_OK , 'data retrieved succussfully' , $data);
+
     }
 
     public function getMedicineSales(Request $request)
@@ -64,11 +92,5 @@ class AdminMedicineController extends Controller
         //return this admin medicines: the name , the sales , depending on:the entered date(between x and y)
         //get only the medicines with sales(sales > 0)
         // with the total cost of this period
-    }
-
-    public function getAllMedicines(Request $request)
-    {
-        //get all the admin medicines sorted by the category 
-        //ex:the first category medicines, then the second one medicines, and so on.
     }
 }

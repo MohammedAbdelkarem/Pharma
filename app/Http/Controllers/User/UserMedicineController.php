@@ -7,10 +7,6 @@ use Illuminate\Http\Request;
 
 class UserMedicineController extends Controller
 {
-    public function getMedicinesByCategory(Request $request)
-    {
-        //get this category medicines
-    }
 
     public function addMedicineToFavourites(Request $request)
     {

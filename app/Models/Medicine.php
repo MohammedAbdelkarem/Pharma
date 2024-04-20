@@ -27,6 +27,10 @@ class Medicine extends Model
     {
         return $query->where('id' , $id);
     }
+    public function scopeEmptyMedicine($query)
+    {
+        return $query->where('available_quantity' , 0);
+    }
 
     public function admin()
     {

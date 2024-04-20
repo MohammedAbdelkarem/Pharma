@@ -15,11 +15,21 @@ class Order extends Model
     protected $fillable=[
         'order_status',
         'payment_status',
-        'active',
+        'active_status',
         'price',
         'user_id',
         'admin_id',
     ];
+
+    public function scopeAdminId($query)
+    {
+        return $query->where('admin_id', admin_id());
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('active_status', 'active');
+    }
 
     public function admin()
     {

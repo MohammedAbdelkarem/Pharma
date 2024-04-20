@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->enum('order_status', ['pending', 'done'])->default('pending');
             $table->enum('payment_status', ['paid', 'not_paid'])->default('not_paid');
-            $table->enum('active', ['active', 'inactive'])->default('active');
+            $table->enum('active_status', ['active', 'inactive'])->default('active');
             $table->integer('price')->default(0);
             $table->foreignId('user_id')->constrained('users')->CascadeOnDelete();
             $table->foreignId('admin_id')->nullable()->constrained('admins')->CascadeOnDelete();

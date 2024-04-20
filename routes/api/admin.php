@@ -23,4 +23,7 @@ Route::group(['prefix' => 'admin' , 'middleware' => ['auth:admin_api' , 'scopes:
     Route::post('edit' , [AuthenticateAdminController::class , 'editInformation']);
     Route::post('add' , [AdminMedicineController::class , 'addMedicine']);
     Route::post('update' , [AdminMedicineController::class , 'updateMedicine']);
+    Route::post('delete' , [AdminMedicineController::class , 'deleteMedincine']);
+    Route::get('getempty' , [AdminMedicineController::class , 'getEmptyQuantities']);
+    Route::get('getmed' , [AdminMedicineController::class , 'getAllMedicines']);
 });

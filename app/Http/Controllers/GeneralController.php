@@ -16,6 +16,11 @@ class GeneralController extends Controller
         //get the admins from the admins table
     }
 
+    public function getMedicinesByCategory(Request $request)
+    {
+        //get this category medicines
+    }
+
     public function getMedicinesByAdminAndCategory(Request $request)
     {
         //return the medicines from the medicine table depending on the admin id and category id

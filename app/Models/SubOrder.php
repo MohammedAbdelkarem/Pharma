@@ -16,6 +16,15 @@ class SubOrder extends Model
         'medicine_id',
     ];
 
+    public function scopeOrders($query , $array)
+    {
+        return $query->whereIn('order_id', $array);
+    }
+    public function scopeMedicines($query , $id)
+    {
+        return $query->where('medicine_id', $id);
+    }
+
     public function order()
     {
         return $this->belongsTo(Order::class);
