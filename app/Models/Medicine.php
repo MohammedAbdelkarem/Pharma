@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Medicine extends Model
 {
@@ -22,9 +23,9 @@ class Medicine extends Model
         'category_id',
     ];
 
-    public function scopeAdminId($query , $id)
+    public function scopeCurrentMedicine($query , $id)
     {
-        return $query->where('admin_id' , $id);
+        return $query->where('id' , $id);
     }
 
     public function admin()

@@ -23,9 +23,10 @@ class EditRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['unique:admins,username'],
-            'mobile' => ['unique:admins,mobile' , 'phone:AUTO'],
+            'username' => ['unique:admins,username' , 'required'],
+            'mobile' => ['unique:admins,mobile' , 'phone:AUTO' , 'required'],
             'password' => [ 
+                'required',
                 Password::min(8)
                 ->letters()
                 ->numbers()

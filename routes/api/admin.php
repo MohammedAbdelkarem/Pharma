@@ -22,4 +22,5 @@ Route::group(['prefix' => 'admin' , 'middleware' => ['auth:admin_api' , 'scopes:
     Route::post('logout' , [AuthenticateAdminController::class , 'logout']);
     Route::post('edit' , [AuthenticateAdminController::class , 'editInformation']);
     Route::post('add' , [AdminMedicineController::class , 'addMedicine']);
+    Route::post('update' , [AdminMedicineController::class , 'updateMedicine']);
 });

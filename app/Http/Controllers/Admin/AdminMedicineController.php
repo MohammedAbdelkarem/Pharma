@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Admin;
 use App\Models\Medicine;
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\AddMedicineRequest;
 use App\Services\MedicineService;
+use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\Admin\AddMedicineRequest;
+use App\Http\Requests\Admin\UpdateMedicineRequest;
 
 class AdminMedicineController extends Controller
 {
@@ -32,11 +34,19 @@ class AdminMedicineController extends Controller
         return $this->SendResponse(response::HTTP_CREATED , 'medicine added successfully');
     }
 
-    public function updateMedicine(Request $request)
+    public function updateMedicine(UpdateMedicineRequest $request)
     {
-        //validate the information of the medicine
+        $validatedData = $request->validated();
 
-        //update the medicine information
+        $handeledData = $this->medicineService->handleData($validatedData);
+
+        $medicine_id = $validatedData['id'];
+        // dd($medicine_id);
+
+        Medicine::currentMedicine($medicine_id)->update($handeledData);
+        // dd($handeledData);
+
+        return $this->SendResponse(response::HTTP_CREATED , 'medicine updated successfully');
     }
 
     public function deleteMedincine(Request $request)
