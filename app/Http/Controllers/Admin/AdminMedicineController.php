@@ -58,7 +58,7 @@ class AdminMedicineController extends Controller
 
         Medicine::currentMedicine($medicine_id)->update($handeledData);
 
-        return $this->SendResponse(response::HTTP_CREATED , 'medicine updated successfully');
+        return $this->SendResponse(response::HTTP_NO_CONTENT , 'medicine updated successfully');
     }
 
     public function deleteMedincine(DeleteMedincineRequest $request)
@@ -74,17 +74,21 @@ class AdminMedicineController extends Controller
         
         Medicine::currentMedicine($validatedId)->delete();
 
-        return $this->SendResponse(response::HTTP_OK , 'medicine deleted successfully');
+        return $this->SendResponse(response::HTTP_NO_CONTENT , 'medicine deleted successfully');
     }
 
     public function getEmptyQuantities()
     {
-        $data = Medicine::emptyMedicine()->get();
+        $data = Medicine::CuurentAdminId()->emptyMedicine()->get();
 
         $data = MedicineResource::collection($data);
 
-        return $this->sendResponse(response::HTTP_OK , 'data retrieved succussfully' , $data);
-
+        if(!$data->isEmpty())
+        {
+            return $this->sendResponse(response::HTTP_OK , 'data retrieved succussfully' , $data);
+        }
+        return $this->sendResponse(response::HTTP_NO_CONTENT , 'no empty medicines yet');
+        
     }
 
     public function getMedicineSales(Request $request)

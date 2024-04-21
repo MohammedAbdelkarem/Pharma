@@ -32,6 +32,11 @@ class Medicine extends Model
         return $query->where('available_quantity' , 0);
     }
 
+    public function scopeCuurentAdminId($query)
+    {
+        return $query->where('admin_id' , admin_id());
+    }
+
     public function admin()
     {
         return $this->belongsTo(Admin::class);

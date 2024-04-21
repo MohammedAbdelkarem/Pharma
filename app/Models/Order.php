@@ -21,7 +21,7 @@ class Order extends Model
         'admin_id',
     ];
 
-    public function scopeAdminId($query)
+    public function scopeCurrentAdminId($query)
     {
         return $query->where('admin_id', admin_id());
     }
@@ -29,6 +29,18 @@ class Order extends Model
     public function scopeActive($query)
     {
         return $query->where('active_status', 'active');
+    }
+    public function scopeInactive($query)
+    {
+        return $query->where('active_status' , 'inactive');
+    }
+    public function scopeOrderId($query , $id)
+    {
+        return $query->where('id', $id);
+    }
+    public function scopeDateBetween($query , $startDate , $endDate)
+    {
+        return $query->whereBetween('created_at', [$startDate, $endDate]);
     }
 
     public function admin()

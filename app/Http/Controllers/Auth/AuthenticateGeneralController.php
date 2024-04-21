@@ -24,7 +24,7 @@ class AuthenticateGeneralController extends Controller
         }
         if($validatedCode == $defaultCode)
         {
-            return $this->SendResponse(response::HTTP_OK , 'correct code');
+            return $this->SendResponse(response::HTTP_NO_CONTENT , 'correct code');
         }
         return $this->SendResponse(response::HTTP_UNPROCESSABLE_ENTITY , 'invalid code');
     }

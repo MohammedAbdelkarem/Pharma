@@ -37,10 +37,10 @@ class AuthenticateAdminController extends Controller
 
         event(new SendEmail($email , $code));
 
-        Cache::forever('email', $email);
+        Cache::forever('admin_email', $email);
         Cache::put('code', $code , now()->addHour());
 
-        return $this->SendResponse(response::HTTP_CREATED , 'email sended successfully');
+        return $this->SendResponse(response::HTTP_NO_CONTENT , 'email sended successfully');
     }
     public function register(RegisterRequest $request)
     {
@@ -62,7 +62,7 @@ class AuthenticateAdminController extends Controller
         {
             $validatedData = $request->validated();
 
-            Cache::forever('email' , $validatedData['email']);
+            Cache::forever('admin_email' , $validatedData['email']);
 
             config(['auth.guards.admin_api.provider' => 'admin']);
 
@@ -90,6 +90,6 @@ class AuthenticateAdminController extends Controller
 
         Admin::currentEmail()->update($updates);
 
-        return $this->SendResponse(response::HTTP_OK , 'data updated succussfully');
+        return $this->SendResponse(response::HTTP_NO_CONTENT , 'data updated succussfully');
     }
 }

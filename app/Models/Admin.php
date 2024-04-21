@@ -52,7 +52,7 @@ class Admin extends Authenticatable
 
     public function scopeCurrentEmail($query)
     {
-        $email = Cache::get('email');
+        $email = Cache::get('admin_email');
         return $query->where('email' , $email);
     }
     

@@ -15,10 +15,15 @@ use App\Http\Controllers\Auth\AuthenticateUserController;
 */
 
 
-Route::post('user/send' , [AuthenticateUserController::class , 'sendCode']);
-Route::post('user/register' , [AuthenticateUserController::class , 'register']);
-Route::post('user/login' , [AuthenticateUserController::class , 'login']);
+Route::group(['prefix' => 'user/auth'], function () {
+    Route::post('send' , [AuthenticateUserController::class , 'sendCode']);
+    Route::post('register' , [AuthenticateUserController::class , 'register']);
+    Route::post('login' , [AuthenticateUserController::class , 'login']);
+});
+
 Route::group(['prefix' => 'user' , 'middleware' => ['auth:user_api' , 'scopes:user']] , function(){
-    Route::post('logout' , [AuthenticateUserController::class , 'logout']);
-    Route::post('edit' , [AuthenticateUserController::class , 'editInformation']);
+    Route::group(['prefix' => 'auth'], function () {
+        Route::post('logout' , [AuthenticateUserController::class , 'logout']);
+        Route::post('edit' , [AuthenticateUserController::class , 'editInformation']);
+    });
 });

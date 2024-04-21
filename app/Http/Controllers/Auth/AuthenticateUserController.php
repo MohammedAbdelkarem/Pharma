@@ -41,10 +41,10 @@ class AuthenticateUserController extends Controller
 
         event(new SendEmail($email , $code));
 
-        Cache::forever('email', $email);
+        Cache::forever('user_email', $email);
         Cache::put('code', $code , now()->addHour());
 
-        return $this->SendResponse(response::HTTP_CREATED , 'email sended successfully');
+        return $this->SendResponse(response::HTTP_NO_CONTENT , 'email sended successfully');
     }
     public function register(RegisterRequest $request)
     {
@@ -67,7 +67,7 @@ class AuthenticateUserController extends Controller
         {
             $validatedData = $request->validated();
 
-            Cache::forever('email' , $validatedData['email']);
+            Cache::forever('user_email' , $validatedData['email']);
             
             config(['auth.guards.user_api.provider' => 'user']);
 
@@ -95,6 +95,6 @@ class AuthenticateUserController extends Controller
 
         User::currentEmail()->update($updates);
 
-        return $this->SendResponse(response::HTTP_OK , 'data updated succussfully');
+        return $this->SendResponse(response::HTTP_NO_CONTENT , 'data updated succussfully');
     }
 }

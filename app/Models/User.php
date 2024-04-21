@@ -51,7 +51,7 @@ class User extends Authenticatable
 
     public function scopeCurrentEmail($query)
     {
-        $email = Cache::get('email');
+        $email = Cache::get('user_email');
         return $query->where('email' , $email);
     }
 

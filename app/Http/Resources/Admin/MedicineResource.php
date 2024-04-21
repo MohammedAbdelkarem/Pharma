@@ -18,7 +18,7 @@ class MedicineResource extends JsonResource
             'id' => $this->id,
             'trade_name' => $this->trade_name,
             'photo' => $this->photo,
-            'category_id' => $this->category_id,
+            'category' => $this->category->Category,
         ];
     }
 }
