@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Cache;
 
@@ -72,5 +73,12 @@ if(!function_exists('admin_id'))
     function admin_id()
     {
         return Admin::currentEmail()->pluck('id')->first();
+    }
+}
+if(!function_exists('user_id'))
+{
+    function user_id()
+    {
+        return User::currentEmail()->pluck('id')->first();
     }
 }

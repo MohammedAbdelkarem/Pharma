@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticateUserController;
+use App\Http\Controllers\User\UserMedicineController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,5 +26,10 @@ Route::group(['prefix' => 'user' , 'middleware' => ['auth:user_api' , 'scopes:us
     Route::group(['prefix' => 'auth'], function () {
         Route::post('logout' , [AuthenticateUserController::class , 'logout']);
         Route::post('edit' , [AuthenticateUserController::class , 'editInformation']);
+    });
+
+    Route::group(['prefix' => 'medicine'], function () {
+        Route::post('addtofav' , [UserMedicineController::class , 'addMedicineToFavourites']);
+        Route::get('getfav' , [UserMedicineController::class , 'getFavourites']);
     });
 });

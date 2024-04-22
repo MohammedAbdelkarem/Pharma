@@ -7,10 +7,10 @@ use App\Models\Order;
 use App\Models\Category;
 use App\Models\Medicine;
 use App\Models\SubOrder;
-use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use App\Services\MedicineService;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MedicineIdRequest;
 use App\Http\Resources\Admin\MedicineResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Admin\AddMedicineRequest;
@@ -61,7 +61,7 @@ class AdminMedicineController extends Controller
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'medicine updated successfully');
     }
 
-    public function deleteMedincine(DeleteMedincineRequest $request)
+    public function deleteMedincine(MedicineIdRequest $request)
     {
         $validatedId = $request->validated()['id'];
         

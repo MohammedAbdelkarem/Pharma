@@ -5,7 +5,7 @@ namespace App\Http\Resources\Admin;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
+r
 class OrderResource extends JsonResource
 {
     /**

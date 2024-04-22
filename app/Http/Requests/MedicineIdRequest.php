@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteMedincineRequest extends FormRequest
+class MedicineIdRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
