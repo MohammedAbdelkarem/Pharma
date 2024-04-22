@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ArchivedOrdersRequest extends FormRequest
+class CustomerOrderRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class ArchivedOrdersRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'start' => ['date'],
-            'end' => ['date'],
+            'user_id' => ['required' , 'min:1']
         ];
     }
 }

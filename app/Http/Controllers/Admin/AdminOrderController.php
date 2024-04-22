@@ -8,10 +8,12 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CustomerOrderRequest;
 use App\Http\Resources\Admin\OrderResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Admin\UpdateOrderStatusRequest;
 use App\Http\Requests\Admin\UpdatePaymentStatusRequest;
+use App\Http\Resources\Admin\CustomerResource;
 
 class AdminOrderController extends Controller
 {
@@ -66,14 +68,12 @@ class AdminOrderController extends Controller
         //select every thing from orders in between(the first date whaich is the first order created at , and the last date which is now) where (the admin id is admin_id()) where (the active_status is inactive)
         $validatedData = $request->validated();
 
-        dd($validatedData);
-        $startDate = isset($validatedData['start_date'])
-        ? Carbon::parse($validatedData['start_date'])
+        $startDate = isset($validatedData['start'])
+        ? Carbon::parse($validatedData['start'])
         : Order::min('created_at');
-        //dd($startDate);
 
-        $endDate = isset($validatedData['end_date'])
-        ? Carbon::parse($validatedData['end_date'])
+        $endDate = isset($validatedData['end'])
+        ? Carbon::parse($validatedData['end'])
         : Carbon::now();
         
         $data = Order::currentAdminId()->inactive()->dateBetween($startDate , $endDate)->get();
@@ -88,14 +88,33 @@ class AdminOrderController extends Controller
         return $this->sendResponse(response::HTTP_OK , 'data retrieved successfully' , $data);
     }
 
-    public function getCustomers(Request $request)
+    public function getCustomers()
     {
-        //return all this admin customers(every user has been ever deal with this admin)
-        //be careful about the user returned information
+        $data = Order::where('admin_id' , admin_id())->where('active_status' , 'active')->get();
+
+        if ($data->isEmpty())
+        {
+            return $this->sendResponse(response::HTTP_NO_CONTENT , 'there is no customers yet');
+        }
+
+        $data = CustomerResource::collection($data);
+
+        return $this->sendResponse(response::HTTP_OK , 'customers retrieved successfully' , $data);
     }
 
-    public function getCustomerOrders(Request $request)
+    public function getCustomerOrders(CustomerOrderRequest $request)
     {
-        //get the orders for that user(the customers interface will show the users)
+        $userId = $request->validated()['user_id'];
+
+        $data = Order::where('user_id' , $userId)->where('admin_id' , admin_id())->get();
+
+        if ($data->isEmpty())
+        {
+            return $this->sendResponse(response::HTTP_NO_CONTENT , 'there is no orders yet');
+        }
+
+        $data = OrderResource::collection($data);
+
+        return $this->sendResponse(response::HTTP_OK , 'customers retrieved successfully' , $data);
     }
 }

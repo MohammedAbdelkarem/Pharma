@@ -40,6 +40,8 @@ Route::group(['prefix' => 'admin' , 'middleware' => ['auth:admin_api' , 'scopes:
         Route::get('getorders' , [AdminOrderController::class , 'getCurrentOrders']);
         Route::post('updateorder' , [AdminOrderController::class , 'modifyOrderStatus']);
         Route::post('updatepayment' , [AdminOrderController::class , 'modifyPaymentStatus']);
-        Route::get('getarch' , [AdminOrderController::class , 'getArchivedOrders']);
+        Route::post('getarch' , [AdminOrderController::class , 'getArchivedOrders']);
+        Route::get('getcustomers' , [AdminOrderController::class , 'getCustomers']);
+        Route::post('getcustomerorders' , [AdminOrderController::class , 'getCustomerOrders']);
     });
 });
