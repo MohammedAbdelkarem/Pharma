@@ -25,6 +25,10 @@ class Order extends Model
     {
         return $query->where('admin_id', admin_id());
     }
+    public function scopeCurrentUserId($query)
+    {
+        return $query->where('user_id', user_id());
+    }
 
     public function scopeActive($query)
     {
@@ -41,6 +45,10 @@ class Order extends Model
     public function scopeDateBetween($query , $startDate , $endDate)
     {
         return $query->whereBetween('created_at', [$startDate, $endDate]);
+    }
+    public function scopeUserId($query , $id)
+    {
+        return $query->where('user_id' , $id);
     }
 
     public function admin()

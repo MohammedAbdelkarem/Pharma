@@ -16,9 +16,10 @@ class FavouritesResource extends JsonResource
     {
         return [
             'admin_id' => $this->admin_id,
-            'medicine_id' => $this->medicine_id,
-            // 'medicines' => $this->favoriteMedicines->trade_name
-            'admin_username' => $this->users->username,
+            'admin_username' => $this->admin->username,
+            'medicine_id' => $this->id,
+            'medicine_trade_name' => $this->trade_name,
+            'medicine_photo' => $this->photo,
         ];
     }
 }

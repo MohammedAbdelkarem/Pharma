@@ -9,6 +9,7 @@ use App\Traits\ResponseTrait;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MedicineIdRequest;
+use App\Http\Resources\Admin\MedicineResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\User\FavouritesResource;
 
@@ -33,18 +34,35 @@ class UserMedicineController extends Controller
 
     public function getFavourites()
     {
-        $data = DB::table('favorite_medicine_user')->where('user_id' , user_id())->get();
+        $records = DB::table('favorite_medicine_user')->where('user_id' , user_id())->get();
 
-        if($data->isEmpty())
+        if($records->isEmpty())
         {
             return $this->sendResponse(response::HTTP_NO_CONTENT , 'no favourites yet');
         }
-        $data = FavouritesResource::collection($data);
+        foreach($records as $record)
+        {
+            $data[] = new FavouritesResource(Medicine::find($record->medicine_id));
+        }
         return $this->sendResponse(response::HTTP_OK , 'favorites retrieved successfully' , $data);
     }
 
     public function searchForMedicine(Request $request)
     {
-        //generally search in the medicines table
+        $searchFor = $request->field;
+
+        $medicines = Medicine::where('trade_name', 'LIKE', "%$searchFor%")
+        ->orWhere('scientific_name', 'LIKE', "%$searchFor%")
+        ->orWhere('manufacture_company', 'LIKE', "%$searchFor%")
+        ->get();
+
+        if($medicines->isEmpty())
+        {
+            return $this->sendResponse(response::HTTP_NO_CONTENT , 'no results');
+        }
+        
+        $medicines = MedicineResource::collection($medicines);
+
+        return $this->sendResponse(response::HTTP_OK , 'results retrieved successfully' , $medicines);
     }
 }

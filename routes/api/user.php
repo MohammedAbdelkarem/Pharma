@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticateUserController;
 use App\Http\Controllers\User\UserMedicineController;
+use App\Http\Controllers\User\UserOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,5 +32,10 @@ Route::group(['prefix' => 'user' , 'middleware' => ['auth:user_api' , 'scopes:us
     Route::group(['prefix' => 'medicine'], function () {
         Route::post('addtofav' , [UserMedicineController::class , 'addMedicineToFavourites']);
         Route::get('getfav' , [UserMedicineController::class , 'getFavourites']);
+        Route::post('search' , [UserMedicineController::class , 'searchForMedicine']);
+    });
+
+    Route::group(['prefix' => 'order'], function () {
+        Route::post('createsuborder' , [UserOrderController::class , 'createSubOrder']);
     });
 });

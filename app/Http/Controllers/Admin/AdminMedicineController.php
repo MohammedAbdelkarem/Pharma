@@ -91,10 +91,10 @@ class AdminMedicineController extends Controller
         
     }
 
-    public function getMedicineSales(Request $request)
-    {
-        //return this admin medicines: the name , the sales , depending on:the entered date(between x and y)
-        //get only the medicines with sales(sales > 0)
-        // with the total cost of this period
-    }
+    // public function getMedicineSales(Request $request)
+    // {
+    //     //return this admin medicines: the name , the sales , depending on:the entered date(between x and y)
+    //     //get only the medicines with sales(sales > 0)
+    //     // with the total cost of this period
+    // }
 }

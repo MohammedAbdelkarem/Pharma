@@ -2,39 +2,87 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\Medicine;
+use App\Models\SubOrder;
+use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\User\SubOrderRequest;
 
 class UserOrderController extends Controller
 {
-    public function createOrderUtility()
-    {
-        //do it on the services for the user when he logged on or register
-        //check if he has an active order, if he is not, create one of him
-        //also remember that when the order is submitted , we have to make him disactive and then create another one
-        
-        //we can make a service that check if the user has an order or not, then depending on that it will create one or just skip
-        //after that  , call this service in your controllers(remember to call it in the register)
-        //well actually , we will call this service only when the user register, or when the user submit the order.so there is no need for the checking inside this service(just create the new active order).
-    }
 
-    public function createSubOrder(Request $request)
+    use ResponseTrait;
+    public function createSubOrder(SubOrderRequest $request)
     {
         //just take the medicine and add it to this table
         //remember to make the requiered calculations like the total price and the other things
         //also make sure to bind it with the active order id correctly.
+
+        $medicineId = $request->validated()['medicine_id'];
+        $requiredPQuantity = $request->validated()['required_quantity'];
+        $admin_id = Medicine::find($medicineId)->pluck('admin_id')->first();
+
+        $data['required_quantity'] = $requiredPQuantity;
+        $data['medicine_id'] = $medicineId;
+
+        $oneItemPrice = Medicine::currentMedicine($medicineId)->pluck('price')->first();
+        $oldQuantity = Medicine::currentMedicine($medicineId)->pluck('available_quantity')->first();
+
+        $data['total_price'] = $oneItemPrice * $requiredPQuantity;
+
+        $data['order_id'] = Order::currentUserId()->active()->pluck('id')->first();
+         //dd($data['order_id']);
+        $new_quantity = $oldQuantity - $requiredPQuantity;
+
+        Medicine::currentMedicine($medicineId)->update([
+            'available_quantity' => $new_quantity
+        ]);
+        Order::currentUserId()->update([
+            'admin_id' => $admin_id
+        ]);
+
+        SubOrder::create($data);
+
+        return $this->SendResponse(response::HTTP_NO_CONTENT , 'added to cart successfully');
+
+
+        //$data to create: 
+        //requiered quantity:from the front
+        //total price:from us(using the medicine id , multiple the req quantity by the medicine id)
+        //medicine id:form the front
+        //order id:from us(the only active order for that user)
+        //we also here need the user id(take it from the helpers)
+        //do not forget to change the order price(add the price of the suborder to it)
+
+
+        //stopping here , modify all the order topic
+        //we will not create an empty order so delete it from the controllers of register and submit order and delete the order service
+        //we will create an order active for every admin , only when the user create sub order for that admin
+        //the user has one active order for the one admin
+        //in the method above::change the name to::add to cart , then firstly create a new order for that user and then add the suborder to it
+        //change the old implementation
+        //if there is an active order currentluy fo that user and that admin  , then do not create another one and add to the current order
+    }
+
+    public function deleteOrder(Request $request)
+    {
+        // delete all the order and the sub orders
+        //return back the quantities
+    }
+    public function deleteSubOrder(Request $request)
+    {
+        // delete the suborder 
+        //return back the quantitiues
+        //if the order has no suborders anymore(empty order) , then delete it
     }
 
     public function submitOrder(Request $request)
     {
-        //here we will do alot of things
-
-        //discount the quantities from the medicines table
-
-        //close the order 
-
-        //create another one(by the sevice)
-        //$this->orderService->createOrder($admin->id);
+        // change the status of this order 
+        //fill the sales field in the medicine record
     }
 
     public function getOrders(Request $request)

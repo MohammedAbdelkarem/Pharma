@@ -90,7 +90,7 @@ class AdminOrderController extends Controller
 
     public function getCustomers()
     {
-        $data = Order::where('admin_id' , admin_id())->where('active_status' , 'active')->get();
+        $data = Order::currentAdminId()->active()->get();
 
         if ($data->isEmpty())
         {
@@ -106,7 +106,7 @@ class AdminOrderController extends Controller
     {
         $userId = $request->validated()['user_id'];
 
-        $data = Order::where('user_id' , $userId)->where('admin_id' , admin_id())->get();
+        $data = Order::userId($userId)->currentAdminId()->get();
 
         if ($data->isEmpty())
         {
