@@ -17,54 +17,52 @@ class UserOrderController extends Controller
     use ResponseTrait;
     public function createSubOrder(SubOrderRequest $request)
     {
-        //just take the medicine and add it to this table
-        //remember to make the requiered calculations like the total price and the other things
-        //also make sure to bind it with the active order id correctly.
+        $validatedData = $request->validated();
 
-        $medicineId = $request->validated()['medicine_id'];
-        $requiredPQuantity = $request->validated()['required_quantity'];
-        $admin_id = Medicine::find($medicineId)->pluck('admin_id')->first();
+        $adminId = $validatedData['admin_id'];
+        $medicineId = $validatedData['medicine_id'];
+        $requiredQuantity = $validatedData['required_quantity'];
+        
 
-        $data['required_quantity'] = $requiredPQuantity;
+        //check if there is an active order or not
+        $activeOrders = Order::active()->currentUserId()->adminId($adminId)->get();
+
+        //if there is no active order then create one
+        if($activeOrders->isEmpty())
+        {
+            $data['user_id'] = user_id();
+            $data['admin_id'] = $validatedData['admin_id'];
+            Order::create($data);
+        }
+        //get the order id
+        $orderId = Order::active()->currentUserId()->adminId($adminId)->pluck('id')->first();
+
+        //cleat the prevouis array to use it again
+        unset($data);
+        
+
+        //preaper the data to create the suborder
+        $data['required_quantity'] = $requiredQuantity;
         $data['medicine_id'] = $medicineId;
+        $data['order_id'] = $orderId;
 
         $oneItemPrice = Medicine::currentMedicine($medicineId)->pluck('price')->first();
-        $oldQuantity = Medicine::currentMedicine($medicineId)->pluck('available_quantity')->first();
 
-        $data['total_price'] = $oneItemPrice * $requiredPQuantity;
-
-        $data['order_id'] = Order::currentUserId()->active()->pluck('id')->first();
-         //dd($data['order_id']);
-        $new_quantity = $oldQuantity - $requiredPQuantity;
-
-        Medicine::currentMedicine($medicineId)->update([
-            'available_quantity' => $new_quantity
-        ]);
-        Order::currentUserId()->update([
-            'admin_id' => $admin_id
-        ]);
+        $data['total_price'] = $oneItemPrice * $requiredQuantity;
 
         SubOrder::create($data);
 
+        //modify the order price
+        $oldOrderPrice = Order::find($orderId)->pluck('price')->first();
+        $oldOrderPrice += $data['total_price'];
+        Order::find($orderId)->update(['price' => $oldOrderPrice]);
+
+        //modify the Medicine quantity
+        $oldQuantity = Medicine::find($medicineId)->pluck('available_quantity')->first();
+        $oldQuantity -= $requiredQuantity;
+        Medicine::find($medicineId)->update(['available_quantity' => $oldQuantity]);
+
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'added to cart successfully');
-
-
-        //$data to create: 
-        //requiered quantity:from the front
-        //total price:from us(using the medicine id , multiple the req quantity by the medicine id)
-        //medicine id:form the front
-        //order id:from us(the only active order for that user)
-        //we also here need the user id(take it from the helpers)
-        //do not forget to change the order price(add the price of the suborder to it)
-
-
-        //stopping here , modify all the order topic
-        //we will not create an empty order so delete it from the controllers of register and submit order and delete the order service
-        //we will create an order active for every admin , only when the user create sub order for that admin
-        //the user has one active order for the one admin
-        //in the method above::change the name to::add to cart , then firstly create a new order for that user and then add the suborder to it
-        //change the old implementation
-        //if there is an active order currentluy fo that user and that admin  , then do not create another one and add to the current order
     }
 
     public function deleteOrder(Request $request)
@@ -76,6 +74,7 @@ class UserOrderController extends Controller
     {
         // delete the suborder 
         //return back the quantitiues
+        //modify the order price
         //if the order has no suborders anymore(empty order) , then delete it
     }
 

@@ -29,6 +29,10 @@ class Order extends Model
     {
         return $query->where('user_id', user_id());
     }
+    public function scopeAdminId($query , $id)
+    {
+        return $query->where('admin_id', $id);
+    }
 
     public function scopeActive($query)
     {

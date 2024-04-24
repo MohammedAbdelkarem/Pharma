@@ -24,6 +24,7 @@ class SubOrderRequest extends FormRequest
         return [
             'required_quantity' => ['required' , 'integer'],
             'medicine_id' => ['required' , 'integer' , 'min:1'],
+            'admin_id' => ['required' , 'integer' , 'min:1'],
         ];
     }
 }

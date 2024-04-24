@@ -24,12 +24,10 @@ class AuthenticateUserController extends Controller
     
 
     private AuthService $authService;
-    private OrderService $orderService;
 
-    public function __construct(AuthService $authService , OrderService $orderService)
+    public function __construct(AuthService $authService)
     {
         $this->authService = $authService;
-        $this->orderService = $orderService;
     }
     public function sendCode(EmailRequest $request)
     {
@@ -55,7 +53,7 @@ class AuthenticateUserController extends Controller
         User::currentEmail()->update($registrationData);
 
         $admin = User::currentEmail()->first('id');
-        $this->orderService->createOrder($admin->id);
+        
         $token = userToken($admin);
         
         return $this->SendResponse(response::HTTP_CREATED , 'successful registeration' , ['token' => $token]);
