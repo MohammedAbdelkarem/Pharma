@@ -34,6 +34,7 @@ Route::group(['prefix' => 'admin' , 'middleware' => ['auth:admin_api' , 'scopes:
         Route::post('update' , [AdminMedicineController::class , 'updateMedicine']);
         Route::post('delete' , [AdminMedicineController::class , 'deleteMedincine']);
         Route::get('getempty' , [AdminMedicineController::class , 'getEmptyQuantities']);
+        Route::post('getmed' , [AdminMedicineController::class , 'getAdminMedicines']);
     });
 
     Route::group(['prefix' => 'order'], function () {

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\Auth\AuthenticateGeneralController;
 
 /*
@@ -15,5 +16,10 @@ use App\Http\Controllers\Auth\AuthenticateGeneralController;
 */
 Route::post('general/check' , [AuthenticateGeneralController::class , 'checkCode']);
 Route::group(['prefix' => 'general' , 'middleware' => ['general']] , function(){
-    
+    Route::get('getcat' , [GeneralController::class , 'getCategories']);
+    Route::get('getadmins' , [GeneralController::class , 'getAdmins']);
+    Route::post('getmedcat' , [GeneralController::class , 'getMedicinesByCategory']);
+    Route::post('getmedcatad' , [GeneralController::class , 'getMedicinesByAdminAndCategory']);
+    Route::post('getmeddetails' , [GeneralController::class , 'getMedicineDetails']);
+    Route::post('getorddetails' , [GeneralController::class , 'getOrderDetails']);
 });

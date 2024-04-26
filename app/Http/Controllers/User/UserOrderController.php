@@ -5,11 +5,14 @@ namespace App\Http\Controllers\User;
 use App\Models\Order;
 use App\Models\Medicine;
 use App\Models\SubOrder;
-use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
+use App\Http\Requests\IdRequest;
 use App\Http\Controllers\Controller;
-use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\OrderIdRequest;
 use App\Http\Requests\User\SubOrderRequest;
+use App\Http\Resources\User\OrderResource;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserOrderController extends Controller
 {
@@ -53,39 +56,110 @@ class UserOrderController extends Controller
         SubOrder::create($data);
 
         //modify the order price
-        $oldOrderPrice = Order::find($orderId)->pluck('price')->first();
-        $oldOrderPrice += $data['total_price'];
-        Order::find($orderId)->update(['price' => $oldOrderPrice]);
+
+        $order = Order::find($orderId);
+        $order->updatePrice($data['total_price'] , '+');
 
         //modify the Medicine quantity
-        $oldQuantity = Medicine::find($medicineId)->pluck('available_quantity')->first();
-        $oldQuantity -= $requiredQuantity;
-        Medicine::find($medicineId)->update(['available_quantity' => $oldQuantity]);
+
+        $medicine = Medicine::find($medicineId);
+        $medicine->updateQuantity($requiredQuantity , '-');
 
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'added to cart successfully');
     }
 
-    public function deleteOrder(Request $request)
+    public function deleteOrder(IdRequest $request)
     {
-        // delete all the order and the sub orders
-        //return back the quantities
+        $orderId = $request->validated()['id'];
+        //dd($orderId);
+
+        $subOrders = SubOrder::where('order_id' , $orderId)->get();
+
+        foreach($subOrders as $sub)
+        {
+            $medicineId = $sub['medicine_id'];
+
+            $quantity = $sub['required_quantity'];
+            
+
+            $medicine = Medicine::find($medicineId);
+            $medicine->updateQuantity($quantity , '+');
+        }
+
+        Order::find($orderId)->delete();
+        
+        return $this->SendResponse(response::HTTP_NO_CONTENT , 'order deleted successfully');
     }
-    public function deleteSubOrder(Request $request)
+    public function deleteSubOrder(IdRequest $request)
     {
-        // delete the suborder 
+        $subOrderId = $request->validated()['id'];//create a request file that take a id and use it with the two last controllers(check what is them)
         //return back the quantitiues
-        //modify the order price
-        //if the order has no suborders anymore(empty order) , then delete it
+        // dd($subOrderId);
+        $subOrder = SubOrder::where('id' , $subOrderId)->first();
+        // dd($subOrder);
+
+        $medicineId = $subOrder['medicine_id'];
+        // dd($medicineId);
+
+        $orderId = $subOrder['order_id'];
+
+        $quantity = $subOrder['required_quantity'];
+
+        $subOrderPrice = $subOrder['total_price'];
+
+        //check if we can update the quantity like that
+        $medicine = Medicine::find($medicineId);
+        $medicine->updateQuantity($quantity , '+');
+
+        $orderPrice = Order::find($orderId)->pluck('price')->first();
+
+        if($orderPrice == $subOrderPrice) // if this subOrder is the last suborder in this order
+        {
+            Order::find($orderId)->delete(); //delete the order directly
+        }
+        else //if there is another subOrders
+        {
+            $order = Order::find($orderId);
+            $order->updatePrice($subOrderPrice, '-');//modify the order price
+            subOrder::find($subOrderId)->delete(); // delete the subOrder
+        }
+        
+        return $this->SendResponse(response::HTTP_NO_CONTENT , 'suborder deleted successfully');
     }
 
-    public function submitOrder(Request $request)
+    public function submitOrder(IdRequest $request)
     {
         // change the status of this order 
-        //fill the sales field in the medicine record
+
+        $orderId = $request->validated()['id'];
+
+        $subOrders = SubOrder::where('order_id' , $orderId)->get();
+        $data=[];
+        foreach($subOrders as $sub) // medicine_id => quantity to add to the sales
+        {
+            $data[$sub['medicine_id']] = $sub['required_quantity'];
+        }
+        // dd($data);
+        //update the sales of the medicine
+        foreach($data as $key => $value)
+        {
+            $medicine = Medicine::find($key);
+            $medicine->updateSales($value , '+');
+        }
+
+        //update the active order status
+        $order = Order::find($orderId);
+        $order->updateActiveStatus('inactive');
+
+        return $this->SendResponse(response::HTTP_NO_CONTENT , 'order submitted successfully');
     }
 
     public function getOrders(Request $request)
     {
-        //get this user orders(including the current order)
+        $data = Order::where('user_id' , user_id())->get();
+
+        //make changes pn the returned data using a resource
+        $data = OrderResource::collection($data);
+        return $this->SendResponse(response::HTTP_OK , 'orders retrieved successfully' , $data);
     }
 }

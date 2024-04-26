@@ -55,6 +55,29 @@ class Order extends Model
         return $query->where('user_id' , $id);
     }
 
+
+
+    public function updatePrice($incoming , $char)
+    {
+        if($char == '+')
+        {
+            $this->price += $incoming;
+        }
+        else
+        {
+            $this->price -= $incoming;
+        }
+        $this->save();
+    }
+
+    public function updateActiveStatus($status)
+    {
+        $this->active_status = $status;
+
+        $this->save();
+    }
+
+
     public function admin()
     {
         return $this->belongsTo(Admin::class);

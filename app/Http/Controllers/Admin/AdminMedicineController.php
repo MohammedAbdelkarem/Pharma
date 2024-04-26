@@ -8,10 +8,11 @@ use App\Models\Category;
 use App\Models\Medicine;
 use App\Models\SubOrder;
 use App\Traits\ResponseTrait;
+use App\Http\Requests\IdRequest;
 use App\Services\MedicineService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MedicineIdRequest;
-use App\Http\Resources\Admin\MedicineResource;
+use App\Http\Resources\MedicineResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Admin\AddMedicineRequest;
 use App\Http\Requests\Admin\UpdateMedicineRequest;
@@ -61,7 +62,7 @@ class AdminMedicineController extends Controller
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'medicine updated successfully');
     }
 
-    public function deleteMedincine(MedicineIdRequest $request)
+    public function deleteMedincine(IdRequest $request)
     {
         $validatedId = $request->validated()['id'];
         
@@ -91,10 +92,18 @@ class AdminMedicineController extends Controller
         
     }
 
-    // public function getMedicineSales(Request $request)
-    // {
-    //     //return this admin medicines: the name , the sales , depending on:the entered date(between x and y)
-    //     //get only the medicines with sales(sales > 0)
-    //     // with the total cost of this period
-    // }
+    public function getAdminMedicines(IdRequest $request)
+    {
+        $categoryId = $request->validated()['id'];
+
+        $data = Medicine::where('category_id' , $categoryId)->CurrentAdminId()->get();
+
+        $data = MedicineResource::collection($data);
+
+        if(!$data->isEmpty())
+        {
+            return $this->sendResponse(response::HTTP_OK , 'data retrieved succussfully' , $data);
+        }
+        return $this->sendResponse(response::HTTP_NO_CONTENT , 'no medicines yet');
+    }
 }

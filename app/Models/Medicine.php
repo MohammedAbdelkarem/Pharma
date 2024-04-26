@@ -32,10 +32,41 @@ class Medicine extends Model
         return $query->where('available_quantity' , 0);
     }
 
-    public function scopeCuurentAdminId($query)
+    public function scopeCurrentAdminId($query)
     {
         return $query->where('admin_id' , admin_id());
     }
+
+
+
+    public function updateQuantity($incoming , $char)
+    {
+        if($char == '+')
+        {
+            $this->available_quantity += $incoming;
+        }
+        else
+        {
+            $this->available_quantity -= $incoming;
+        }
+        $this->save();
+    }
+    public function updateSales($incoming , $char)
+    {
+        if($char == '+')
+        {
+            $this->sales += $incoming;
+        }
+        else
+        {
+            $this->sales -= $incoming;
+        }
+        $this->save();
+    }
+
+    
+
+
 
     public function admin()
     {

@@ -37,5 +37,9 @@ Route::group(['prefix' => 'user' , 'middleware' => ['auth:user_api' , 'scopes:us
 
     Route::group(['prefix' => 'order'], function () {
         Route::post('createsuborder' , [UserOrderController::class , 'createSubOrder']);
+        Route::post('deleteorder' , [UserOrderController::class , 'deleteOrder']);
+        Route::post('deletesuborder' , [UserOrderController::class , 'deleteSubOrder']);
+        Route::post('submit' , [UserOrderController::class , 'submitOrder']);
+        Route::get('get' , [UserOrderController::class , 'getOrders']);
     });
 });

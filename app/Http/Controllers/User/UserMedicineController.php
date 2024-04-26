@@ -6,10 +6,11 @@ use App\Models\Medicine;
 use Illuminate\Http\Request;
 use App\Models\medicine_user;
 use App\Traits\ResponseTrait;
+use App\Http\Requests\IdRequest;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MedicineIdRequest;
-use App\Http\Resources\Admin\MedicineResource;
+use App\Http\Resources\MedicineResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\User\FavouritesResource;
 
@@ -17,7 +18,7 @@ class UserMedicineController extends Controller
 {
 
     use ResponseTrait;
-    public function addMedicineToFavourites(MedicineIdRequest $request)
+    public function addMedicineToFavourites(IdRequest $request)
     {
         $medicineId = $request->validated()['id'];
 
