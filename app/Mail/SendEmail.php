@@ -32,7 +32,7 @@ class SendEmail extends Mailable
         ->view('email-template')
         ->with([
             'inputs' => $this->code,
-          ]);;
+          ]);
     }
 
 

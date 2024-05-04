@@ -79,7 +79,7 @@ class AuthenticateAdminController extends Controller
     {
         Token::adminId()->delete();
 
-         return $this->SendResponse(response::HTTP_OK , 'logged out successfully');
+        return $this->SendResponse(response::HTTP_OK , 'logged out successfully');
     }
 
     public function editInformation(EditRequest $request)

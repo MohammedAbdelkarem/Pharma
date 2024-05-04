@@ -82,7 +82,7 @@ class AuthenticateUserController extends Controller
     {
         Token::userId()->delete();
 
-         return $this->SendResponse(response::HTTP_OK , 'logged out successfully');
+        return $this->SendResponse(response::HTTP_OK , 'logged out successfully');
     }
 
     public function editInformation(EditRequest $request)
