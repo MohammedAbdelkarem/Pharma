@@ -2,30 +2,29 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\Admin\ArchivedOrdersRequest;
-use Carbon\Carbon;
-use App\Models\Order;
-use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
+use App\Services\OrderService;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\CustomerOrderRequest;
-use App\Http\Resources\Admin\OrderResource;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\Admin\ArchivedOrdersRequest;
 use App\Http\Requests\Admin\UpdateOrderStatusRequest;
 use App\Http\Requests\Admin\UpdatePaymentStatusRequest;
-use App\Http\Resources\Admin\CustomerResource;
+use App\Http\Requests\IdRequest;
 
 class AdminOrderController extends Controller
 {
     use ResponseTrait;
 
+    private OrderService $orderService;
+ 
+    public function __construct(OrderService $orderService)
+    {
+        $this->orderService = $orderService;
+    }
+
     public function getCurrentOrders()
     {
-        //return the active orders of this admin
-
-        $data = Order::currentAdminId()->active()->get();
-
-        $data = OrderResource::collection($data);
+        $data = $this->orderService->getAdminActiveOrders();
 
         if(!$data->isEmpty())
         {
@@ -36,85 +35,59 @@ class AdminOrderController extends Controller
 
     public function modifyOrderStatus(UpdateOrderStatusRequest $request)
     {
-        //modify the order status  ,do not forget the enum
-        $newStatus = $request->validated();
-        
-        $orderId = $request->validated()['id'];
-        
-        Order::OrderId($orderId)->update($newStatus);
+        $validatedData = $request->validated();
+
+        $this->orderService->updateOrder($validatedData);
 
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'order status updated successfully');
     }
 
     public function modifyPaymentStatus(UpdatePaymentStatusRequest $request)
     {
-        //modify the payment status  ,do not forget the enum
-
-        $newStatus = $request->validated();
+        $validatedData = $request->validated();
         
-        $orderId = $request->validated()['id'];
-        
-        Order::OrderId($orderId)->update($newStatus);
+        $this->orderService->updatePayment($validatedData);
 
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'payment status updated successfully');
     }
 
     public function getArchivedOrders(ArchivedOrdersRequest $request)
     {
-        //get the archived orders , depending on the date(between x and y)
-        //note: the initial value of the x and y shold return all the archived orders
-        //so the admin when open this page should get all the orders initially(think how to do that)
-
-        //select every thing from orders in between(the first date whaich is the first order created at , and the last date which is now) where (the admin id is admin_id()) where (the active_status is inactive)
         $validatedData = $request->validated();
 
-        $startDate = isset($validatedData['start'])
-        ? Carbon::parse($validatedData['start'])
-        : Order::min('created_at');
-
-        $endDate = isset($validatedData['end'])
-        ? Carbon::parse($validatedData['end'])
-        : Carbon::now();
-        
-        $data = Order::currentAdminId()->inactive()->dateBetween($startDate , $endDate)->get();
+        $data = $this->orderService->getAdminArchivedOrders($validatedData);
 
         if ($data->isEmpty())
         {
             return $this->sendResponse(response::HTTP_NO_CONTENT , 'there is no orders yet');
         }
-
-        $data = OrderResource::collection($data);
 
         return $this->sendResponse(response::HTTP_OK , 'data retrieved successfully' , $data);
     }
 
     public function getCustomers()
     {
-        $data = Order::currentAdminId()->active()->get();
+        $data = $this->orderService->getCustomers();
 
         if ($data->isEmpty())
         {
             return $this->sendResponse(response::HTTP_NO_CONTENT , 'there is no customers yet');
         }
 
-        $data = CustomerResource::collection($data);
-
         return $this->sendResponse(response::HTTP_OK , 'customers retrieved successfully' , $data);
     }
 
-    public function getCustomerOrders(CustomerOrderRequest $request)
+    public function getCustomerOrders(IdRequest $request)
     {
-        $userId = $request->validated()['user_id'];
+        $userId = $request->validated()['id'];
 
-        $data = Order::userId($userId)->currentAdminId()->get();
+        $data = $this->orderService->getCustomerOrders($userId);
 
         if ($data->isEmpty())
         {
             return $this->sendResponse(response::HTTP_NO_CONTENT , 'there is no orders yet');
         }
 
-        $data = OrderResource::collection($data);
-
-        return $this->sendResponse(response::HTTP_OK , 'customers retrieved successfully' , $data);
+        return $this->sendResponse(response::HTTP_OK , 'customer orders retrieved successfully' , $data);
     }
 }

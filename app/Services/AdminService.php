@@ -1,9 +1,20 @@
 <?php
 namespace App\Services;
+
+use App\Models\Admin;
+use Illuminate\Support\Facades\Cache;
  
-class AuthService
+class AdminService
 {
-    public function handleData(array $user)
+    public function createAdmin($email , $code)
+    {
+        Admin::create($email);
+
+        Cache::forever('admin_email', $email);
+        Cache::put('code', $code , now()->addHour());
+    }
+
+    public function updateAdmin(array $user)
     {
         
         $fieldsToUpdate = ['username', 'mobile', 'password', 'bio'];
@@ -28,7 +39,7 @@ class AuthService
         {
             hashing($data);
         }
-
-        return $data;
+        
+        Admin::currentEmail()->update($data);
     }
 }

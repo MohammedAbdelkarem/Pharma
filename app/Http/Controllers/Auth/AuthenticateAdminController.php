@@ -2,43 +2,38 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\Admin;
 use App\Event\SendEmail;
 use Laravel\Passport\Token;
 use App\Traits\ResponseTrait;
-use App\Services\AuthService;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\Auth\Admin\EditRequest;
 use App\Http\Requests\Auth\Admin\EmailRequest;
 use App\Http\Requests\Auth\Admin\LoginRequest;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Auth\Admin\RegisterRequest;
+use App\Services\AdminService;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class AuthenticateAdminController extends Controller
 {
     use ResponseTrait , ValidatesRequests;
 
-    private AuthService $authService;
+    private AdminService $adminService;
  
-    public function __construct(AuthService $authService)
+    public function __construct(AdminService $adminService)
     {
-        $this->authService = $authService;
+        $this->adminService = $adminService;
     }
 
     public function sendCode(EmailRequest $request)
     {
         $email = $request->validated();
 
-        Admin::create($email);
-
         $code = RandomCode();
 
         event(new SendEmail($email , $code));
 
-        Cache::forever('admin_email', $email);
-        Cache::put('code', $code , now()->addHour());
+        $this->adminService->createAdmin($email , $code);
 
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'email sended successfully');
     }
@@ -46,12 +41,9 @@ class AuthenticateAdminController extends Controller
     {
         $validatedData = $request->validated();
 
-        $registrationData = $this->authService->handleData($validatedData);
+        $this->adminService->updateAdmin($validatedData);
 
-        Admin::currentEmail()->update($registrationData);
-
-        $admin = Admin::currentEmail()->first('id');
-        $token = adminToken($admin);
+        $token = getAdminToken();
         
         return $this->SendResponse(response::HTTP_CREATED , 'successful registeration' , ['token' => $token]);
     }
@@ -60,15 +52,11 @@ class AuthenticateAdminController extends Controller
     {
         if(auth()->guard('admin')->attempt($request->only('email' , 'password')))
         {
-            $validatedData = $request->validated();
+            $email = $request->validated();
 
-            Cache::forever('admin_email' , $validatedData['email']);
+            configAdminAuth($email);
 
-            config(['auth.guards.admin_api.provider' => 'admin']);
-
-            $admin = Admin::currentEmail()->first('id');
-
-            $token = adminToken($admin);
+            $token = getAdminToken();
             
             return $this->SendResponse(response::HTTP_OK , 'logged in successfully' , ['token' => $token]);
         }
@@ -85,10 +73,8 @@ class AuthenticateAdminController extends Controller
     public function editInformation(EditRequest $request)
     {
         $validatedData = $request->validated();
-        
-        $updates = $this->authService->handleData($validatedData);
 
-        Admin::currentEmail()->update($updates);
+        $this->adminService->updateAdmin($validatedData);
 
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'data updated succussfully');
     }

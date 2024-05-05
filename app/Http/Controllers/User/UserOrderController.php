@@ -28,42 +28,42 @@ class UserOrderController extends Controller
         
 
         //check if there is an active order or not
-        $activeOrders = Order::active()->currentUserId()->adminId($adminId)->get();
+        // $activeOrders = Order::active()->currentUserId()->adminId($adminId)->get();
 
         //if there is no active order then create one
-        if($activeOrders->isEmpty())
-        {
-            $data['user_id'] = user_id();
-            $data['admin_id'] = $validatedData['admin_id'];
-            Order::create($data);
-        }
+        // if($activeOrders->isEmpty())
+        // {
+        //     $data['user_id'] = user_id();
+        //     $data['admin_id'] = $validatedData['admin_id'];
+        //     Order::create($data);
+        // }
         //get the order id
-        $orderId = Order::active()->currentUserId()->adminId($adminId)->pluck('id')->first();
+        // $orderId = Order::active()->currentUserId()->adminId($adminId)->pluck('id')->first();
 
         //cleat the prevouis array to use it again
-        unset($data);
+        // unset($data);
         
 
         //preaper the data to create the suborder
-        $data['required_quantity'] = $requiredQuantity;
-        $data['medicine_id'] = $medicineId;
-        $data['order_id'] = $orderId;
+        // $data['required_quantity'] = $requiredQuantity;
+        // $data['medicine_id'] = $medicineId;
+        // $data['order_id'] = $orderId;
 
-        $oneItemPrice = Medicine::currentMedicine($medicineId)->pluck('price')->first();
+        // // $oneItemPrice = Medicine::currentMedicine($medicineId)->pluck('price')->first();
 
-        $data['total_price'] = $oneItemPrice * $requiredQuantity;
+        // $data['total_price'] = $oneItemPrice * $requiredQuantity;
 
-        SubOrder::create($data);
+        // SubOrder::create($data);
 
         //modify the order price
 
-        $order = Order::find($orderId);
-        $order->updatePrice($data['total_price'] , '+');
+        // $order = Order::find($orderId);
+        // $order->updatePrice($data['total_price'] , '+');
 
         //modify the Medicine quantity
 
-        $medicine = Medicine::find($medicineId);
-        $medicine->updateQuantity($requiredQuantity , '-');
+        // $medicine = Medicine::find($medicineId);
+        // $medicine->updateQuantity($requiredQuantity , '-');
 
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'added to cart successfully');
     }

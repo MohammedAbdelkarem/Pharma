@@ -2,48 +2,39 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Models\Medicine;
 use Illuminate\Http\Request;
-use App\Models\medicine_user;
 use App\Traits\ResponseTrait;
 use App\Http\Requests\IdRequest;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\MedicineIdRequest;
-use App\Http\Resources\MedicineResource;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Resources\User\FavouritesResource;
+use App\Services\MedicineService;
 
 class UserMedicineController extends Controller
 {
-
     use ResponseTrait;
+
+    private MedicineService $medicineService;
+ 
+    public function __construct(MedicineService $medicineService)
+    {
+        $this->medicineService = $medicineService;
+    }
     public function addMedicineToFavourites(IdRequest $request)
     {
         $medicineId = $request->validated()['id'];
 
-        $data['user_id'] = user_id();
+        $this->medicineService->addToFavourites($medicineId);
 
-        $data['medicine_id'] = $medicineId;
-
-        $data['admin_id'] = Medicine::currentMedicine($medicineId)->pluck('admin_id')->first();
-
-        DB::table('favorite_medicine_user')->insert($data);
-
-        return $this->sendResponse(response::HTTP_NO_CONTENT , 'added to medicine successfully');
+        return $this->sendResponse(response::HTTP_NO_CONTENT , 'added to favourites successfully');
     }
 
     public function getFavourites()
     {
-        $records = DB::table('favorite_medicine_user')->where('user_id' , user_id())->get();
+        $data = $this->medicineService->getFavourites();
 
-        if($records->isEmpty())
+        if(!$data)
         {
             return $this->sendResponse(response::HTTP_NO_CONTENT , 'no favourites yet');
-        }
-        foreach($records as $record)
-        {
-            $data[] = new FavouritesResource(Medicine::find($record->medicine_id));
         }
         return $this->sendResponse(response::HTTP_OK , 'favorites retrieved successfully' , $data);
     }
@@ -51,18 +42,13 @@ class UserMedicineController extends Controller
     public function searchForMedicine(Request $request)
     {
         $searchFor = $request->field;
-
-        $medicines = Medicine::where('trade_name', 'LIKE', "%$searchFor%")
-        ->orWhere('scientific_name', 'LIKE', "%$searchFor%")
-        ->orWhere('manufacture_company', 'LIKE', "%$searchFor%")
-        ->get();
+        
+        $medicines = $this->medicineService->results($searchFor);
 
         if($medicines->isEmpty())
         {
             return $this->sendResponse(response::HTTP_NO_CONTENT , 'no results');
         }
-        
-        $medicines = MedicineResource::collection($medicines);
 
         return $this->sendResponse(response::HTTP_OK , 'results retrieved successfully' , $medicines);
     }
