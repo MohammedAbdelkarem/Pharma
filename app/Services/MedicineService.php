@@ -106,4 +106,11 @@ class MedicineService
 
         return $medicines;
     }
+
+    public function updateMedicineQuantity($medicineId , $quantity , $char)
+    {
+        $medicine = Medicine::find($medicineId);
+
+        $medicine->updateQuantity($quantity , $char);
+    }
 }

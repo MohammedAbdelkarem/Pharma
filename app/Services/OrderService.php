@@ -10,6 +10,15 @@ use App\Http\Resources\Admin\CustomerResource;
  
 class OrderService
 {
+
+    private $subOrderService;
+    private $medicineService;
+
+    public function __construct(SubOrderService $subOrderService , MedicineService $medicineService)
+    {
+        $this->subOrderService = $subOrderService;
+        $this->medicineService = $medicineService;
+    }
     public function createOrder($id)
     {
         Order::create([
@@ -58,11 +67,18 @@ class OrderService
         return $oneItemPrice * $quantity;
     }
 
+    public function updateOrderPrice($orderId , $price , $char)
+    {
+        $order = Order::find($orderId);
+
+        $order->updatePrice($price , $char);
+    }
+
     public function createSubOrder(array $info)
     {
         $adminId = $info['admin_id'];
-        $quantity = $info['required_quantity'];
         $medicineId = $info['medicine_id'];
+        $quantity = $info['required_quantity'];
 
         $activeOrders = $this->getAdminUserActiveOrders($adminId);
 
@@ -75,23 +91,22 @@ class OrderService
 
         $totalPrice = $this->totalPrice($medicineId , $quantity);
 
+        $this->subOrderService->createSubOrder($quantity , $medicineId , $orderId , $totalPrice);
 
-        //search about how to move those lines to the SubOrderService and call it here
-        SubOrder::create([
-            'required_quantity' => $quantity,
-            'medicine_id' => $medicineId,
-            'order_id' => $orderId,
-            'total_price' => $totalPrice,
-        ]);
-        
-        //put this in another method here
-        $order = Order::find($orderId);
-        $order->updatePrice($totalPrice , '+');
+        $this->updateOrderPrice($orderId , $totalPrice , '+');
 
-        //put this in another method int he medicineservice and call it here
-        $medicine = Medicine::find($medicineId);
-        $medicine->updateQuantity($quantity , '-');
+        $this->medicineService->updateMedicineQuantity($medicineId , $quantity , '-');
 
+    }
+
+    public function deleteEmptyOrder($orderId)
+    {
+        $price = Order::where('id' , $orderId)->pluck('price')->first();
+
+        if($price == 0)
+        {
+            Order::find($orderId)->delete();
+        }
     }
 
     public function getAdminArchivedOrders(array $date)
@@ -140,6 +155,15 @@ class OrderService
         Order::OrderId($validatedData['id'])->update([
             'payment_status' => $validatedData['payment_status']
         ]);
+    }
+
+    public function deleteOrder($orderId)
+    {
+        $subOrders = $this->subOrderService->getSubOrders($orderId);
+
+        $this->subOrderService->returnBackSubOrders($subOrders);
+
+        Order::find($orderId)->delete();
     }
 
 }

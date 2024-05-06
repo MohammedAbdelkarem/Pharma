@@ -12,58 +12,28 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderIdRequest;
 use App\Http\Requests\User\SubOrderRequest;
 use App\Http\Resources\User\OrderResource;
+use App\Services\OrderService;
+use App\Services\SubOrderService;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserOrderController extends Controller
 {
 
     use ResponseTrait;
+
+    private OrderService $orderService;
+    private SubOrderService $subOrderService;
+ 
+    public function __construct(OrderService $orderService , SubOrderService $subOrderService)
+    {
+        $this->orderService = $orderService;
+        $this->subOrderService = $subOrderService;
+    }
     public function createSubOrder(SubOrderRequest $request)
     {
         $validatedData = $request->validated();
-
-        $adminId = $validatedData['admin_id'];
-        $medicineId = $validatedData['medicine_id'];
-        $requiredQuantity = $validatedData['required_quantity'];
         
-
-        //check if there is an active order or not
-        // $activeOrders = Order::active()->currentUserId()->adminId($adminId)->get();
-
-        //if there is no active order then create one
-        // if($activeOrders->isEmpty())
-        // {
-        //     $data['user_id'] = user_id();
-        //     $data['admin_id'] = $validatedData['admin_id'];
-        //     Order::create($data);
-        // }
-        //get the order id
-        // $orderId = Order::active()->currentUserId()->adminId($adminId)->pluck('id')->first();
-
-        //cleat the prevouis array to use it again
-        // unset($data);
-        
-
-        //preaper the data to create the suborder
-        // $data['required_quantity'] = $requiredQuantity;
-        // $data['medicine_id'] = $medicineId;
-        // $data['order_id'] = $orderId;
-
-        // // $oneItemPrice = Medicine::currentMedicine($medicineId)->pluck('price')->first();
-
-        // $data['total_price'] = $oneItemPrice * $requiredQuantity;
-
-        // SubOrder::create($data);
-
-        //modify the order price
-
-        // $order = Order::find($orderId);
-        // $order->updatePrice($data['total_price'] , '+');
-
-        //modify the Medicine quantity
-
-        // $medicine = Medicine::find($medicineId);
-        // $medicine->updateQuantity($requiredQuantity , '-');
+        $this->orderService->createSubOrder($validatedData);
 
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'added to cart successfully');
     }
@@ -71,59 +41,17 @@ class UserOrderController extends Controller
     public function deleteOrder(IdRequest $request)
     {
         $orderId = $request->validated()['id'];
-        //dd($orderId);
 
-        $subOrders = SubOrder::where('order_id' , $orderId)->get();
-
-        foreach($subOrders as $sub)
-        {
-            $medicineId = $sub['medicine_id'];
-
-            $quantity = $sub['required_quantity'];
-            
-
-            $medicine = Medicine::find($medicineId);
-            $medicine->updateQuantity($quantity , '+');
-        }
-
-        Order::find($orderId)->delete();
+        $this->orderService->deleteOrder($orderId);
         
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'order deleted successfully');
     }
     public function deleteSubOrder(IdRequest $request)
     {
-        $subOrderId = $request->validated()['id'];//create a request file that take a id and use it with the two last controllers(check what is them)
-        //return back the quantitiues
-        // dd($subOrderId);
-        $subOrder = SubOrder::where('id' , $subOrderId)->first();
-        // dd($subOrder);
-
-        $medicineId = $subOrder['medicine_id'];
-        // dd($medicineId);
-
-        $orderId = $subOrder['order_id'];
-
-        $quantity = $subOrder['required_quantity'];
-
-        $subOrderPrice = $subOrder['total_price'];
-
-        //check if we can update the quantity like that
-        $medicine = Medicine::find($medicineId);
-        $medicine->updateQuantity($quantity , '+');
-
-        $orderPrice = Order::find($orderId)->pluck('price')->first();
-
-        if($orderPrice == $subOrderPrice) // if this subOrder is the last suborder in this order
-        {
-            Order::find($orderId)->delete(); //delete the order directly
-        }
-        else //if there is another subOrders
-        {
-            $order = Order::find($orderId);
-            $order->updatePrice($subOrderPrice, '-');//modify the order price
-            subOrder::find($subOrderId)->delete(); // delete the subOrder
-        }
+        $subOrderId = $request->validated()['id'];
         
+        $this->subOrderService->deleteSubOrder($subOrderId);
+
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'suborder deleted successfully');
     }
 
