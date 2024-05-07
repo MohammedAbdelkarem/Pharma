@@ -16,26 +16,37 @@ use App\Http\Resources\MedicineResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\MedicineDetailsResource;
 use App\Http\Resources\OrderDetailsResource;
+use App\Services\AdminService;
+use App\Services\CategoryService;
+use App\Services\MedicineService;
+use App\Services\OrderService;
 
 class GeneralController extends Controller
 {
     use ResponseTrait;
-    public function getCategories(Request $request)
+
+    private CategoryService $categoryService;
+    private AdminService $adminService;
+    private MedicineService $medicineService;
+    private OrderService $orderService;
+ 
+    public function __construct(CategoryService $categoryService , AdminService $adminService , MedicineService $medicineService , OrderService $orderService)
     {
-        //get the categories from the category table
-
-        $data = Category::get();
-
-        $data = CategoryResource::collection($data); 
+        $this->categoryService = $categoryService;
+        $this->adminService = $adminService;
+        $this->medicineService = $medicineService;
+        $this->orderService = $orderService;
+    }
+    public function getCategories()
+    {
+        $data = $this->categoryService->getCategories();
 
         return $this->SendResponse(response::HTTP_OK , 'categories retrieved successfully' , $data);
     }
 
     public function getAdmins()
     {
-        $data = Admin::get();
-
-        $data = AdminResource::collection($data); 
+        $data = $this->adminService->getAdmins();
 
         if(!$data->isEmpty())
         {
@@ -44,60 +55,34 @@ class GeneralController extends Controller
         return $this->sendResponse(response::HTTP_NO_CONTENT , 'no admins yet');
     }
 
-    public function getMedicinesByCategory(IdRequest $request)//use the id request file
+
+    public function getMedicianesByAdmin(IdRequest $request)
     {
-        //get this category medicines
+        $adminId = $request->validated()['id'];
 
-        $categoryId = $request->validated()['id'];
+        $data = $this->medicineService->getMedicinesByAd($adminId);
 
-        $data = Medicine::where('category_id' , $categoryId)->get();//use resource
-
-        $data = MedicineResource::collection($data);
-        
         if(!$data->isEmpty())
         {
-            return $this->sendResponse(response::HTTP_OK , 'medicines retrieved succussfully' , $data);
+            return $this->sendResponse(response::HTTP_OK , 'data retrieved succussfully' , $data);
         }
         return $this->sendResponse(response::HTTP_NO_CONTENT , 'no medicines yet');
     }
 
-    public function getMedicinesByAdminAndCategory(AdCatRequest $request)
-    {
-        //return the medicines from the medicine table depending on the admin id and category id
-
-        $categoryId = $request->validated()['category_id'];
-        $adminId = $request->validated()['admin_id'];
-
-        $data = Medicine::where('category_id' , $categoryId)->where('admin_id' , $adminId)->get();
-        
-        $data = MedicineResource::collection($data);
-
-        if(!$data->isEmpty())
-        {
-            return $this->sendResponse(response::HTTP_OK , 'medicines retrieved succussfully' , $data);
-        }
-        return $this->sendResponse(response::HTTP_NO_CONTENT , 'no medicines yet');
-    }
-
-    public function getMedicineDetails(IdRequest $request)//use the id requesr file
+    public function getMedicineDetails(IdRequest $request)
     {
         $medicineId = $request->validated()['id'];
 
-        $data = Medicine::where('id' , $medicineId)->get(); // use resouce for the returned data
-
-        $data = MedicineDetailsResource::collection($data);
+        $data = $this->medicineService->getMedicineDetails($medicineId);
 
         return $this->SendResponse(response::HTTP_OK , 'medicine details retrieved successfully' , $data);
-        //search about the find if we can use it with another things 
     }
 
     public function getOrderDetails(IdRequest $request)
     {
         $orderId = $request->validated()['id'];
 
-        $data = Order::where('id' , $orderId)->get();
-
-        $data = OrderDetailsResource::collection($data);
+        $data = $this->orderService->getOrderDetails($orderId);
 
         return $this->sendResponse(response::HTTP_OK , 'order details retrieved successfully' , $data);
     }

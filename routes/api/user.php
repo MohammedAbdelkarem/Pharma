@@ -33,6 +33,8 @@ Route::group(['prefix' => 'user' , 'middleware' => ['auth:user_api' , 'scopes:us
         Route::post('addtofav' , [UserMedicineController::class , 'addMedicineToFavourites']);
         Route::get('getfav' , [UserMedicineController::class , 'getFavourites']);
         Route::post('search' , [UserMedicineController::class , 'searchForMedicine']);
+        Route::post('getmedcat' , [UserMedicineController::class , 'getMedicinesByCategory']);
+        Route::post('getmedcatad' , [UserMedicineController::class , 'getMedicinesByCategoryAdmin']);
     });
 
     Route::group(['prefix' => 'order'], function () {

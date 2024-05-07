@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderIdRequest;
 use App\Http\Requests\User\SubOrderRequest;
 use App\Http\Resources\User\OrderResource;
+use App\Services\MedicineService;
 use App\Services\OrderService;
 use App\Services\SubOrderService;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,12 +23,15 @@ class UserOrderController extends Controller
     use ResponseTrait;
 
     private OrderService $orderService;
+
     private SubOrderService $subOrderService;
+    private MedicineService $medicineService;
  
-    public function __construct(OrderService $orderService , SubOrderService $subOrderService)
+    public function __construct(OrderService $orderService , SubOrderService $subOrderService , MedicineService $medicineService)
     {
         $this->orderService = $orderService;
         $this->subOrderService = $subOrderService;
+        $this->medicineService = $medicineService;
     }
     public function createSubOrder(SubOrderRequest $request)
     {
@@ -57,37 +61,26 @@ class UserOrderController extends Controller
 
     public function submitOrder(IdRequest $request)
     {
-        // change the status of this order 
-
+        $validatedData = $request->validated();
         $orderId = $request->validated()['id'];
 
-        $subOrders = SubOrder::where('order_id' , $orderId)->get();
-        $data=[];
-        foreach($subOrders as $sub) // medicine_id => quantity to add to the sales
-        {
-            $data[$sub['medicine_id']] = $sub['required_quantity'];
-        }
-        // dd($data);
-        //update the sales of the medicine
-        foreach($data as $key => $value)
-        {
-            $medicine = Medicine::find($key);
-            $medicine->updateSales($value , '+');
-        }
+        $this->orderService->updateOrder($validatedData);
 
-        //update the active order status
-        $order = Order::find($orderId);
-        $order->updateActiveStatus('inactive');
+        $this->medicineService->updateSales($orderId);
+        
 
         return $this->SendResponse(response::HTTP_NO_CONTENT , 'order submitted successfully');
     }
 
-    public function getOrders(Request $request)
+    public function getOrders()
     {
-        $data = Order::where('user_id' , user_id())->get();
+        $data = $this->orderService->getUserOrders();
 
-        //make changes pn the returned data using a resource
-        $data = OrderResource::collection($data);
+        if ($data->isEmpty())
+        {
+            return $this->sendResponse(response::HTTP_NO_CONTENT , 'there is no orders yet');
+        }
+
         return $this->SendResponse(response::HTTP_OK , 'orders retrieved successfully' , $data);
     }
 }

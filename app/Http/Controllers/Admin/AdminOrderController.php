@@ -83,7 +83,7 @@ class AdminOrderController extends Controller
 
         $data = $this->orderService->getCustomerOrders($userId);
 
-        if ($data->isEmpty())
+        if ($data->isEmptay())
         {
             return $this->sendResponse(response::HTTP_NO_CONTENT , 'there is no orders yet');
         }

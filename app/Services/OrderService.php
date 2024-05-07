@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Medicine;
 use App\Models\SubOrder;
 use App\Http\Resources\Admin\OrderResource;
+use App\Http\Resources\OrderDetailsResource;
 use App\Http\Resources\Admin\CustomerResource;
  
 class OrderService
@@ -25,6 +26,31 @@ class OrderService
             'user_id' => user_id(),
             'admin_id' => $id
         ]);
+    }
+
+    public function createSubOrder(array $info)
+    {
+        $adminId = $info['admin_id'];
+        $medicineId = $info['medicine_id'];
+        $quantity = $info['required_quantity'];
+
+        $activeOrders = $this->getAdminUserActiveOrders($adminId);
+
+        if($activeOrders->isEmpty())
+        {
+            $this->createOrder($adminId);
+        }
+
+        $orderId = $this->getActiveOrderId($adminId);
+
+        $totalPrice = $this->totalPrice($medicineId , $quantity);
+
+        $this->subOrderService->createSubOrder($quantity , $medicineId , $orderId , $totalPrice);
+
+        $this->updateOrderPrice($orderId , $totalPrice , '+');
+
+        $this->medicineService->updateMedicineQuantity($medicineId , $quantity , '-');
+
     }
 
     public function checkMedicine($id)
@@ -58,55 +84,6 @@ class OrderService
         $orderId = Order::active()->currentUserId()->adminId($id)->pluck('id')->first();
 
         return $orderId;
-    }
-
-    public function totalPrice($id , $quantity)
-    {
-        $oneItemPrice = Medicine::currentMedicine($id)->pluck('price')->first();
-
-        return $oneItemPrice * $quantity;
-    }
-
-    public function updateOrderPrice($orderId , $price , $char)
-    {
-        $order = Order::find($orderId);
-
-        $order->updatePrice($price , $char);
-    }
-
-    public function createSubOrder(array $info)
-    {
-        $adminId = $info['admin_id'];
-        $medicineId = $info['medicine_id'];
-        $quantity = $info['required_quantity'];
-
-        $activeOrders = $this->getAdminUserActiveOrders($adminId);
-
-        if($activeOrders->isEmpty())
-        {
-            $this->createOrder($adminId);
-        }
-
-        $orderId = $this->getActiveOrderId($adminId);
-
-        $totalPrice = $this->totalPrice($medicineId , $quantity);
-
-        $this->subOrderService->createSubOrder($quantity , $medicineId , $orderId , $totalPrice);
-
-        $this->updateOrderPrice($orderId , $totalPrice , '+');
-
-        $this->medicineService->updateMedicineQuantity($medicineId , $quantity , '-');
-
-    }
-
-    public function deleteEmptyOrder($orderId)
-    {
-        $price = Order::where('id' , $orderId)->pluck('price')->first();
-
-        if($price == 0)
-        {
-            Order::find($orderId)->delete();
-        }
     }
 
     public function getAdminArchivedOrders(array $date)
@@ -144,6 +121,38 @@ class OrderService
         return $data;
     }
 
+    public function getUserOrders()
+    {
+        $orders = Order::currentUserId()->get();
+
+        $data = OrderResource::collection($orders);
+
+        return  $orders;
+    }
+
+    public function getOrderDetails($orderId)
+    {
+        $order = Order::where('id' , $orderId)->get();
+
+        $order = OrderDetailsResource::collection($order);
+
+        return $order;
+    }
+
+    public function totalPrice($id , $quantity)
+    {
+        $oneItemPrice = Medicine::currentMedicine($id)->pluck('price')->first();
+
+        return $oneItemPrice * $quantity;
+    }
+
+    public function updateOrderPrice($orderId , $price , $char)
+    {
+        $order = Order::find($orderId);
+
+        $order->updatePrice($price , $char);
+    }
+
     public function updateOrder(array $validatedData)
     {
         Order::OrderId($validatedData['id'])->update([
@@ -155,6 +164,16 @@ class OrderService
         Order::OrderId($validatedData['id'])->update([
             'payment_status' => $validatedData['payment_status']
         ]);
+    }
+
+    public function deleteEmptyOrder($orderId)
+    {
+        $price = Order::where('id' , $orderId)->pluck('price')->first();
+
+        if($price == 0)
+        {
+            Order::find($orderId)->delete();
+        }
     }
 
     public function deleteOrder($orderId)

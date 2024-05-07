@@ -5,15 +5,22 @@ use App\Models\Medicine;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\SearchResource;
 use App\Http\Resources\MedicineResource;
+use App\Http\Resources\MedicineDetailsResource;
 use App\Http\Resources\User\FavouritesResource;
  
 class MedicineService
 {
+    private $subOrderService;
+
+    public function __construct(SubOrderService $subOrderService)
+    {
+        $this->subOrderService = $subOrderService;
+    }
 
     public function createMedicine(array $medicine)
     {
         
-        $fieldsToCreate = ['scientific_name', 'manufacture_company', 'available_quantity', 'Ed' , 'price' , 'trade_name' , 'category_id'];
+        $fieldsToCreate = ['scientific_name', 'manufacture_company','available_quantity', 'Ed' , 'price' , 'trade_name' , 'category_id'];
 
         foreach ($fieldsToCreate as $field)
         {
@@ -68,15 +75,38 @@ class MedicineService
         return $data;
     }
 
-    public function addToFavourites($id)
+    public function getMedicinesByAd($adminId)
     {
-        $data['user_id'] = user_id();
+        $medicines = Medicine::where('admin_id' , $adminId)->get();
 
-        $data['medicine_id'] = $id;
+        $medicines = MedicineResource::collection($medicines);
 
-        $data['admin_id'] = Medicine::currentMedicine($id)->pluck('admin_id')->first();
+        return $medicines;
+    }
+    public function getMedicinesByCat($categoryId)
+    {
+        $medicines = Medicine::where('category_id' , $categoryId)->get();
 
-        DB::table('favorite_medicine_user')->insert($data);
+        $medicines = MedicineResource::collection($medicines);
+
+        return $medicines;
+    }
+    public function getMedicinesByCatAd($categoryId , $adminId)
+    {
+        $medicines = Medicine::where('category_id' , $categoryId)->where('admin_id' , $adminId)->get();
+
+        $medicines = MedicineResource::collection($medicines);
+
+        return $medicines;
+    }
+
+    public function getMedicineDetails($medicineId)
+    {
+        $medicine = Medicine::currentMedicine($medicineId)->get();
+
+        $medicine = MedicineDetailsResource::collection($medicine);
+
+        return $medicine;
     }
 
     public function getFavourites()
@@ -93,6 +123,17 @@ class MedicineService
             $data[] = new FavouritesResource(Medicine::find($record->medicine_id));
         }
         return $data;
+    }
+
+    public function addToFavourites($id)
+    {
+        $data['user_id'] = user_id();
+
+        $data['medicine_id'] = $id;
+
+        $data['admin_id'] = Medicine::currentMedicine($id)->pluck('admin_id')->first();
+
+        DB::table('favorite_medicine_user')->insert($data);
     }
 
     public function results($field)
@@ -112,5 +153,16 @@ class MedicineService
         $medicine = Medicine::find($medicineId);
 
         $medicine->updateQuantity($quantity , $char);
+    }
+    public function updateSales($orderId)
+    {
+        $subOrdes = $this->subOrderService->getSubOrders($orderId);
+
+        foreach($subOrdes as $sub)
+        {
+            $medicine = Medicine::find($sub['medicine_id']);
+
+            $medicine->updateSales($sub['required_quantity'] , '+');
+        }
     }
 }

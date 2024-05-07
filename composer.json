@@ -23,6 +23,7 @@
         "larastan/larastan": "^2.9",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
+        "laravel/telescope": "^5.0",
         "lcobucci/jwt": "^4.3|^5.0",
         "league/oauth2-server": "^8.2",
         "mockery/mockery": "^1.4.4",
@@ -68,7 +69,9 @@
             "dev-master": "10.x-dev"
         },
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/telescope"
+            ]
         }
     },
     "config": {

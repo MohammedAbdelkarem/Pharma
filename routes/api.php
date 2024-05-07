@@ -18,8 +18,7 @@ Route::post('general/check' , [AuthenticateGeneralController::class , 'checkCode
 Route::group(['prefix' => 'general' , 'middleware' => ['general']] , function(){
     Route::get('getcat' , [GeneralController::class , 'getCategories']);
     Route::get('getadmins' , [GeneralController::class , 'getAdmins']);
-    Route::post('getmedcat' , [GeneralController::class , 'getMedicinesByCategory']);
-    Route::post('getmedcatad' , [GeneralController::class , 'getMedicinesByAdminAndCategory']);
+    Route::post('getmedad' , [GeneralController::class , 'getMedicianesByAdmin']);
     Route::post('getmeddetails' , [GeneralController::class , 'getMedicineDetails']);
     Route::post('getorddetails' , [GeneralController::class , 'getOrderDetails']);
 });

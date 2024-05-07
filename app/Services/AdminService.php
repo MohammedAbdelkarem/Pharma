@@ -1,11 +1,20 @@
 <?php
 namespace App\Services;
 
+use App\Http\Resources\AdminResource;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Cache;
  
 class AdminService
 {
+    public function getAdmins()
+    {
+        $admins = Admin::get();
+
+        $admins = AdminResource::collection($admins);
+
+        return $admins;
+    }
     public function createAdmin($email , $code)
     {
         Admin::create($email);
