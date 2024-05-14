@@ -2,10 +2,10 @@
 Pharmacies and Providers Management System
 
 ERD Link:
-https://drive.google.com/file/d/1cFfJMLpAsE5QowNa5q1PrvhZH-gFw5ZR/view?usp=sharing 
+https://drive.google.com/file/d/1e_PWLObfFO3MVnBGEiIsz0FTevDlUnX4/view?usp=sharing
 
 Use_Cases Diagram link:
-https://drive.google.com/file/d/14OKrDaWjh2fW20Qeb2uVi08YAzGDLfE4/view?usp=sharing
+https://drive.google.com/file/d/1JcLoN7Vl2SWsrJdnFd7zs6lB0mul-g6U/view?usp=sharing
 
 (it's better to open them using draw.io)
 
