@@ -1,5 +1,5 @@
 # Pharma
-Pharmacies and Providers Management System
+Pharmacies and Providers Management System using Laravel 10
 
 ERD Link:
 https://drive.google.com/file/d/1e_PWLObfFO3MVnBGEiIsz0FTevDlUnX4/view?usp=sharing
