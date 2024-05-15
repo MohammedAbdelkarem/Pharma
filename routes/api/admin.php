@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminMedicineController;
-use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\Admin\{AdminMedicineController , AdminOrderController};
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticateAdminController;
 

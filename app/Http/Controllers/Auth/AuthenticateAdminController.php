@@ -6,11 +6,8 @@ use App\Event\SendEmail;
 use Laravel\Passport\Token;
 use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\Admin\EditRequest;
-use App\Http\Requests\Auth\Admin\EmailRequest;
-use App\Http\Requests\Auth\Admin\LoginRequest;
+use App\Http\Requests\Auth\Admin\{EditRequest , EmailRequest , LoginRequest , RegisterRequest};
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\Auth\Admin\RegisterRequest;
 use App\Services\AdminService;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 

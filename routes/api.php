@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\GeneralController;
-use App\Http\Controllers\Auth\AuthenticateGeneralController;
+use App\Http\Controllers\{GeneralController , Auth\AuthenticateGeneralController};
 
 /*
 |--------------------------------------------------------------------------

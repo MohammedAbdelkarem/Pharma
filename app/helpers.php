@@ -1,7 +1,6 @@
 <?php
 
-use App\Models\User;
-use App\Models\Admin;
+use App\Models\{User , Admin};
 use Illuminate\Support\Facades\Cache;
 
 

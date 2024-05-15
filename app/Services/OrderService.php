@@ -2,12 +2,9 @@
 namespace App\Services;
 
 use Carbon\Carbon;
-use App\Models\Order;
-use App\Models\Medicine;
-use App\Models\SubOrder;
-use App\Http\Resources\Admin\OrderResource;
+use App\Models\{Order , SubOrder , Medicine};
+use App\Http\Resources\Admin\{OrderResource , CustomerResource};
 use App\Http\Resources\OrderDetailsResource;
-use App\Http\Resources\Admin\CustomerResource;
  
 class OrderService
 {

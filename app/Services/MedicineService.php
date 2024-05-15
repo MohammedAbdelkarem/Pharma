@@ -3,10 +3,7 @@ namespace App\Services;
 
 use App\Models\Medicine;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\SearchResource;
-use App\Http\Resources\MedicineResource;
-use App\Http\Resources\MedicineDetailsResource;
-use App\Http\Resources\User\FavouritesResource;
+use App\Http\Resources\{SearchResource , MedicineDetailsResource , MedicineResource , User\FavouritesResource};
  
 class MedicineService
 {

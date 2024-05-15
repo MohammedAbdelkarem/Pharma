@@ -6,11 +6,8 @@ use App\Event\SendEmail;
 use Laravel\Passport\Token;
 use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\User\EditRequest;
-use App\Http\Requests\Auth\User\EmailRequest;
-use App\Http\Requests\Auth\User\LoginRequest;
+use App\Http\Requests\Auth\User\{EditRequest , EmailRequest , LoginRequest , RegisterRequest};
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\Auth\User\RegisterRequest;
 use App\Services\UserService;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 

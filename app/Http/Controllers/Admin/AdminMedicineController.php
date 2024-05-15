@@ -4,13 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Medicine;
 use App\Traits\ResponseTrait;
-use App\Http\Requests\IdRequest;
-use App\Services\MedicineService;
+use App\Services\{MedicineService , OrderService};
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\Admin\AddMedicineRequest;
-use App\Http\Requests\Admin\UpdateMedicineRequest;
-use App\Services\OrderService;
+use App\Http\Requests\IdRequest;
+use App\Http\Requests\Admin\{AddMedicineRequest , UpdateMedicineRequest};
 
 class AdminMedicineController extends Controller
 {

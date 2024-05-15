@@ -4,9 +4,8 @@ namespace App\Http\Controllers\User;
 
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
-use App\Http\Requests\IdRequest;
+use App\Http\Requests\{IdRequest , AdCatRequest};
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AdCatRequest;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\MedicineService;
 

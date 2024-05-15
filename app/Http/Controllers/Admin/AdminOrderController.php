@@ -6,10 +6,8 @@ use App\Traits\ResponseTrait;
 use App\Services\OrderService;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\Admin\ArchivedOrdersRequest;
-use App\Http\Requests\Admin\UpdateOrderStatusRequest;
-use App\Http\Requests\Admin\UpdatePaymentStatusRequest;
 use App\Http\Requests\IdRequest;
+use App\Http\Requests\Admin\{ArchivedOrdersRequest , UpdatePaymentStatusRequest , UpdateOrderStatusRequest};
 
 class AdminOrderController extends Controller
 {

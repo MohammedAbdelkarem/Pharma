@@ -2,19 +2,10 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Models\Order;
-use App\Models\Medicine;
-use App\Models\SubOrder;
-use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
-use App\Http\Requests\IdRequest;
+use App\Http\Requests\{IdRequest , User\SubOrderRequest};
 use App\Http\Controllers\Controller;
-use App\Http\Requests\OrderIdRequest;
-use App\Http\Requests\User\SubOrderRequest;
-use App\Http\Resources\User\OrderResource;
-use App\Services\MedicineService;
-use App\Services\OrderService;
-use App\Services\SubOrderService;
+use App\Services\{MedicineService , SubOrderService , OrderService};
 use Symfony\Component\HttpFoundation\Response;
 
 class UserOrderController extends Controller

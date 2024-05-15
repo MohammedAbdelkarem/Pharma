@@ -2,8 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticateUserController;
-use App\Http\Controllers\User\UserMedicineController;
-use App\Http\Controllers\User\UserOrderController;
+use App\Http\Controllers\User\{UserMedicineController , UserOrderController};
 
 /*
 |--------------------------------------------------------------------------
