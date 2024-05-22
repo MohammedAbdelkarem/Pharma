@@ -6,12 +6,12 @@ trait ResponseTrait
 {
     public function SendResponse($status = null , $message = null , $data = null)
     {
-        $array = [
-            'status' => $status,
+        $data = [
+            'data' => $data,
             'message' => $message,
-            'data' => $data
+            'status' => $status,
         ];
-        return response($array);
+        return response()->json($data , $status);
     }
 }
 
