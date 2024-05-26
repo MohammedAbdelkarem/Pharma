@@ -28,7 +28,7 @@ class AdminOrderController extends Controller
         {
             return $this->sendResponse(response::HTTP_OK , 'data retrieved succussfully' , $data);
         }
-        return $this->sendResponse(response::HTTP_NO_CONTENT , 'no active orders');
+        return $this->sendResponse(response::HTTP_OK , 'no active orders');
     }
 
     public function modifyOrderStatus(UpdateOrderStatusRequest $request)
@@ -37,7 +37,7 @@ class AdminOrderController extends Controller
 
         $this->orderService->updateOrder($validatedData);
 
-        return $this->SendResponse(response::HTTP_NO_CONTENT , 'order status updated successfully');
+        return $this->SendResponse(response::HTTP_OK , 'order status updated successfully');
     }
 
     public function modifyPaymentStatus(UpdatePaymentStatusRequest $request)
@@ -46,7 +46,7 @@ class AdminOrderController extends Controller
         
         $this->orderService->updatePayment($validatedData);
 
-        return $this->SendResponse(response::HTTP_NO_CONTENT , 'payment status updated successfully');
+        return $this->SendResponse(response::HTTP_OK , 'payment status updated successfully');
     }
 
     public function getArchivedOrders(ArchivedOrdersRequest $request)
@@ -57,7 +57,7 @@ class AdminOrderController extends Controller
 
         if ($data->isEmpty())
         {
-            return $this->sendResponse(response::HTTP_NO_CONTENT , 'there is no orders yet');
+            return $this->sendResponse(response::HTTP_OK , 'there is no orders yet');
         }
 
         return $this->sendResponse(response::HTTP_OK , 'data retrieved successfully' , $data);
@@ -69,7 +69,7 @@ class AdminOrderController extends Controller
 
         if ($data->isEmpty())
         {
-            return $this->sendResponse(response::HTTP_NO_CONTENT , 'there is no customers yet');
+            return $this->sendResponse(response::HTTP_OK , 'there is no customers yet');
         }
 
         return $this->sendResponse(response::HTTP_OK , 'customers retrieved successfully' , $data);
@@ -83,7 +83,7 @@ class AdminOrderController extends Controller
 
         if ($data->isEmptay())
         {
-            return $this->sendResponse(response::HTTP_NO_CONTENT , 'there is no orders yet');
+            return $this->sendResponse(response::HTTP_OK , 'there is no orders yet');
         }
 
         return $this->sendResponse(response::HTTP_OK , 'customer orders retrieved successfully' , $data);

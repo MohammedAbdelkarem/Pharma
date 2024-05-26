@@ -2,10 +2,17 @@
 
 namespace App\Http\Requests\Auth\User;
 
+use App\Traits\ResponseTrait;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpFoundation\Response;
+// use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class LoginRequest extends FormRequest
 {
+    use ResponseTrait;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,5 +32,20 @@ class LoginRequest extends FormRequest
             'email' => ['required' , 'email' , 'exists:users,email'],
             'password' => ['required','confirmed']
         ];
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw (new HttpResponseException(
+            $this->SendResponse(response::HTTP_UNPROCESSABLE_ENTITY , 'validation error' , $validator->errors()->toArray()))
+        );
     }
 }

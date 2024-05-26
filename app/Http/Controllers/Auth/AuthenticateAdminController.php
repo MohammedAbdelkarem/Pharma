@@ -32,7 +32,7 @@ class AuthenticateAdminController extends Controller
 
         $this->adminService->createAdmin($email , $code);
 
-        return $this->SendResponse(response::HTTP_NO_CONTENT , 'email sended successfully');
+        return $this->SendResponse(response::HTTP_OK , 'email sended successfully');
     }
     public function register(RegisterRequest $request)
     {
@@ -73,6 +73,6 @@ class AuthenticateAdminController extends Controller
 
         $this->adminService->updateAdmin($validatedData);
 
-        return $this->SendResponse(response::HTTP_NO_CONTENT , 'data updated succussfully');
+        return $this->SendResponse(response::HTTP_OK , 'data updated succussfully');
     }
 }

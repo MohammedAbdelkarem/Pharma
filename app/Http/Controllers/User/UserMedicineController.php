@@ -25,7 +25,7 @@ class UserMedicineController extends Controller
 
         $this->medicineService->addToFavourites($medicineId);
 
-        return $this->sendResponse(response::HTTP_NO_CONTENT , 'added to favourites successfully');
+        return $this->sendResponse(response::HTTP_OK , 'added to favourites successfully');
     }
 
     public function getFavourites()
@@ -34,7 +34,7 @@ class UserMedicineController extends Controller
 
         if(!$data)
         {
-            return $this->sendResponse(response::HTTP_NO_CONTENT , 'no favourites yet');
+            return $this->sendResponse(response::HTTP_OK , 'no favourites yet');
         }
         return $this->sendResponse(response::HTTP_OK , 'favorites retrieved successfully' , $data);
     }
@@ -47,7 +47,7 @@ class UserMedicineController extends Controller
 
         if($medicines->isEmpty())
         {
-            return $this->sendResponse(response::HTTP_NO_CONTENT , 'no results');
+            return $this->sendResponse(response::HTTP_OK , 'no results');
         }
 
         return $this->sendResponse(response::HTTP_OK , 'results retrieved successfully' , $medicines);
@@ -63,7 +63,7 @@ class UserMedicineController extends Controller
         {
             return $this->sendResponse(response::HTTP_OK , 'data retrieved succussfully' , $data);
         }
-        return $this->sendResponse(response::HTTP_NO_CONTENT , 'no medicines yet');
+        return $this->sendResponse(response::HTTP_OK , 'no medicines yet');
     }
     public function getMedicinesByCategoryAdmin(AdCatRequest $request)
     {
@@ -76,6 +76,6 @@ class UserMedicineController extends Controller
         {
             return $this->sendResponse(response::HTTP_OK , 'data retrieved succussfully' , $data);
         }
-        return $this->sendResponse(response::HTTP_NO_CONTENT , 'no medicines yet');
+        return $this->sendResponse(response::HTTP_OK , 'no medicines yet');
     }
 }

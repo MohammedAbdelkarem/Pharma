@@ -2,10 +2,16 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Traits\ResponseTrait;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpFoundation\Response;
+// use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CodeRequest extends FormRequest
 {
+    use ResponseTrait;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,5 +30,20 @@ class CodeRequest extends FormRequest
         return [
             'code' => 'required|digits:6|numeric'
         ];
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw (new HttpResponseException(
+            $this->SendResponse(response::HTTP_UNPROCESSABLE_ENTITY , 'validation error' , $validator->errors()->toArray()))
+        );
     }
 }

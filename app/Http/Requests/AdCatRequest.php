@@ -2,10 +2,16 @@
 
 namespace App\Http\Requests;
 
+use App\Traits\ResponseTrait;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpFoundation\Response;
+// use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class AdCatRequest extends FormRequest
 {
+    use ResponseTrait;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,5 +31,20 @@ class AdCatRequest extends FormRequest
             'admin_id' => ['required' , 'min:1' , 'integer'],
             'category_id' => ['required' , 'min:1' , 'integer'],
         ];
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw (new HttpResponseException(
+            $this->SendResponse(response::HTTP_UNPROCESSABLE_ENTITY , 'validation error' , $validator->errors()->toArray()))
+        );
     }
 }

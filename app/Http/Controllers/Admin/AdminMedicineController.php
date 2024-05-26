@@ -47,7 +47,7 @@ class AdminMedicineController extends Controller
 
         $this->medicineService->updateMedicine($validatedData);
 
-        return $this->SendResponse(response::HTTP_NO_CONTENT , 'medicine updated successfully');
+        return $this->SendResponse(response::HTTP_OK , 'medicine updated successfully');
     }
 
     public function deleteMedincine(IdRequest $request)
@@ -63,7 +63,7 @@ class AdminMedicineController extends Controller
         
         Medicine::currentMedicine($medicineId)->delete();
 
-        return $this->SendResponse(response::HTTP_NO_CONTENT , 'medicine deleted successfully');
+        return $this->SendResponse(response::HTTP_OK , 'medicine deleted successfully');
     }
 
     public function getEmptyQuantities()
@@ -74,7 +74,7 @@ class AdminMedicineController extends Controller
         {
             return $this->sendResponse(response::HTTP_OK , 'data retrieved succussfully' , $data);
         }
-        return $this->sendResponse(response::HTTP_NO_CONTENT , 'no empty medicines yet');
+        return $this->sendResponse(response::HTTP_OK , 'no empty medicines yet');
     }
 
     public function getAdminMedicines(IdRequest $request)
@@ -87,6 +87,6 @@ class AdminMedicineController extends Controller
         {
             return $this->sendResponse(response::HTTP_OK , 'data retrieved succussfully' , $data);
         }
-        return $this->sendResponse(response::HTTP_NO_CONTENT , 'no medicines yet');
+        return $this->sendResponse(response::HTTP_OK , 'no medicines yet');
     }
 }
